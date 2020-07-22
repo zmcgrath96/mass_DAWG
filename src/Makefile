@@ -1,7 +1,7 @@
 CC=gcc
 CFLAGS=-I.
-DEPS = MassPrefixTree.h
-OBJ = main.o MassPrefixTree.o
+DEPS = 
+OBJ = main.o 
 
 %.o: %.c $(DEPS)
 	$(CC) -c -o $@ $< $(CFLAGS)
