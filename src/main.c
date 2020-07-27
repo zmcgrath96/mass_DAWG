@@ -3,22 +3,33 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include <MassDawgNode.c>
-#include <utils.c>
+#include "MassDawg.c"
 
 int main(){
-    MassDawgNode * md = (MassDawgNode *)malloc(sizeof(MassDawgNode *));
-    printf("Hello\n");
+    // make a mass dawg and add a mass to it
+    MassDawg * md = initMassDawg();
 
-    addNewNode(md, "ABC", 100.2);
-    printf("%f    %s\n", md->edges[0]->mass, md->edges[0]->child->kmers[0]);
+    double singly[4] = {100.1, 200.2, 300.3, 400.4};
+    double doubly[4] = {200.2, 400.4, 600.6, 800.8};
 
-    int hasChild = hasChildWithValue(md, 100.2);
-    printf("has child: %i\n", hasChild);
+    // printf("Making a new node and adding a kmer to it...\n");
+    // MassDawgNode * newNode = initMassDawgNode();
+    // addKmer("ABC", newNode);
 
-    double arr1[3] = {10.2, 11.6, 12.0};
-    double arr2[4] = {3.12, 100.4, 1233.90, 9000.0};
+    // printf("Adding a child to the node\n");
+    // addNewNode(newNode, "ABCD", 100.1, 200.2);
 
-    int lessThan = compareDoubleArrays(arr2, arr1);
-    printf("%i result of comparison\n", lessThan);
+    // printf("Deleting the nodes...\n");
+    // deleteMassDawgNode(newNode);
+
+    printf("Inserting a singly and doubly sequence with kmer ABC into DAWG\n");
+    insert(md, singly, doubly, "ABCD", 4);
+
+    // go through the graph at this point and print things out to see if it inserted
+    printf("");
+    showDawg(md);
+
+    // clean up and remove the dawg
+    deleteMassDawgNode(md->root);
+    free(md);
 }

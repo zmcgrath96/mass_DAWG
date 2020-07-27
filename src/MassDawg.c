@@ -1,19 +1,29 @@
 #include <stdio.h>
 #include <string.h>
 
-#include <MassDawgNode.c>
-#include <utils.c>
+#include "MassDawgNode.c"
 
+// for keeping track of the nodes in the last sequence as well 
+// as keeping track of the last sequnece
 struct PreviousSequence {
-    double * sequence;
+    double * singlySequence;
+    double * doublySequence;
     MassDawgNode ** nodes;
     int length; 
 };
 
+// for keeping track of nodes that need to be minimized (reduced)
+struct uncheckedNode {
+    MassDawgNode * parent;
+    MassDawgNode * child;
+    double singlyEdgeMass; 
+};
+
+// for holding all nodes and edges
 typedef struct massDawg {
     MassDawgNode * root;
     struct PreviousSequence * previousSequence;
-    MassDawgNode ** uncheckedNodes;
+    struct uncheckedNode ** uncheckedNodes;
     int numUncheckedNodes;
     MassDawgNode ** minimizedNodes;
     int numMinimizedNodes;
@@ -28,14 +38,76 @@ typedef struct massDawg {
  * @return PreviousSequence * 
 */
 struct PreviousSequence * initPreviousSequence(int length) {
-    struct PreviousSequence * ps = (struct PreviousSequence *)malloc(sizeof(struct PreviousSequence *));
-    double sequence[length];
+    struct PreviousSequence * ps = malloc(sizeof(struct PreviousSequence));
     MassDawgNode * nodes[length];
-    ps->sequence = sequence;
+    double singlySequence[length];
+    double doublySequence[length];
+
+    ps->singlySequence = singlySequence;
+    ps->doublySequence = doublySequence;
     ps->nodes = nodes;
     ps->length = length;
     
     return ps;
+}
+
+/**
+ * Recursively print the graph as a tree
+ * 
+ * @param md MassDawg * the mass dawg to print
+ */
+void showDawg(MassDawg * md){
+    printf("root\n");
+    
+    for (int i = 0; i < md->root->numEdges; i ++){
+        for (int space = 0; space < 2; space ++) printf(" ");
+        printf("edge: {singly: %f, doubly: %f}\n", md->root->edges[i]->singlyMass, md->root->edges[i]->doublyMass);
+        showNode(md->root->edges[i]->child, 4);
+    }
+}
+
+/**
+ * Recursively delete the nodes from the tree and free up all memory
+ * 
+ * @param md MassDawg * the mass dawg to delete
+*/
+void deleteMassDawg(MassDawg * md){
+    // first free up all nodes
+    deleteMassDawgNode(md->root);
+
+    // free up all unchecked nodes
+    for (int i = 0; i < md->numUncheckedNodes; i++){
+
+        // make sure all child and parent nodes are freed
+        if (md->uncheckedNodes[i] != NULL){
+            if (md->uncheckedNodes[i]->parent != NULL) deleteMassDawgNode(md->uncheckedNodes[i]->parent);
+            if (md->uncheckedNodes[i]->child != NULL) deleteMassDawgNode(md->uncheckedNodes[i]->child);
+        }
+        free(md->uncheckedNodes[i]);
+        md->uncheckedNodes = NULL;
+    }
+    free(md->uncheckedNodes);
+    md->uncheckedNodes = NULL;
+
+    //free up all minimized nodes
+    for (int i = 0; i < md->numMinimizedNodes; i++){
+
+        // make sure all these nodes are free
+        if (md->minimizedNodes[i] != NULL) deleteMassDawgNode(md->minimizedNodes[i]);
+    }
+    free(md->minimizedNodes);
+    md->minimizedNodes = NULL;
+
+    // free the previous sequence
+    for (int i = 0; i < md->previousSequence->length; i++){
+        if (md->previousSequence->nodes[i] != NULL) deleteMassDawgNode(md->previousSequence->nodes[i]);
+    }
+    free(md->previousSequence->nodes);
+    md->previousSequence = NULL;
+
+    // finally free the struct itself
+    free(md);
+    md = NULL;
 }
 
 /**
@@ -44,10 +116,19 @@ struct PreviousSequence * initPreviousSequence(int length) {
  * @returns MassDawg *
 */
 MassDawg * initMassDawg(){
-    MassDawg * md = (MassDawg *)malloc(sizeof(MassDawg *));
+    MassDawg * md = malloc(sizeof(MassDawg));
+
+    // init the structs 
     md->root = initMassDawgNode();
     md->previousSequence = initPreviousSequence(0);
 
+    // init the pointers to dynamic structs
+    md->minimizedNodes = NULL;
+    md->uncheckedNodes = NULL;
+
+    // init counters
+    md->numUncheckedNodes = 0;
+    md->numMinimizedNodes = 0;
     return md;
 }
 
@@ -58,7 +139,76 @@ MassDawg * initMassDawg(){
  * @param downTo int the level of the graph down to which we should look to combine nodes
 */
 void minimize(MassDawg * md, int downTo){
-    return;
+
+    for (int i = md->numUncheckedNodes - 1; downTo; i--){
+
+        struct uncheckedNode * checkingNode = md->uncheckedNodes[i];
+
+        // if we have minimized the node, set to 1 so that we know to 
+        // add this child to the set of minimized 
+        int minimized = 0;
+
+        // check to see if this node is in the minimized nodes
+        for (int nodeNum = 0; nodeNum < md->numMinimizedNodes; nodeNum ++){
+            if (nodesEqual(md->minimizedNodes[nodeNum], checkingNode->parent)){
+            
+                // find the edge with the correct mass we are looking for
+                struct Edge * updatingEdge;
+                for (int j = 0; j < checkingNode->parent->numEdges; j++){
+                    struct Edge * edgeInQuestion = checkingNode ->parent->edges[j];
+                    if (edgeInQuestion->singlyMass == checkingNode->singlyEdgeMass){
+                        // update this edge's child node to be the minimized node
+                        // with this value
+                        edgeInQuestion->child = md->minimizedNodes[nodeNum];
+                        minimized = 1;
+                        // remove the child node from unchecked nodes
+                        deleteMassDawgNode(checkingNode->child);
+                        break;
+                    }
+                }
+
+            }
+
+            // if we minimized, break
+            if (minimized == 1) break;
+        }
+
+        // if we haven't minimized this node yet, add the child to minimized
+        if (minimized == 0){
+            md->numMinimizedNodes ++;
+
+            MassDawgNode ** updatedMinimizedNodes;
+
+            // if mass minimized nodes haven't been allocated, allocate it
+            if (md->minimizedNodes == NULL){
+                updatedMinimizedNodes = malloc(
+                   sizeof(MassDawgNode *)
+                );
+            }
+            
+            else {
+                printf("Reallocating for updatedMinimized nodes\n");
+                updatedMinimizedNodes = realloc(
+                    md->minimizedNodes, 
+                    sizeof(md->minimizedNodes) + sizeof(MassDawgNode *)
+                );
+            }
+            
+            updatedMinimizedNodes[md->numMinimizedNodes-1] = checkingNode->child;
+            md->minimizedNodes = updatedMinimizedNodes;
+        }
+
+        // remove the unchecked node from list
+        free(md->uncheckedNodes[md->numUncheckedNodes - 1]);
+
+        printf("Reallocing for updated unchecked nodes..\n");
+        struct uncheckedNode ** updatedUncheckedNodes= realloc(
+            md->uncheckedNodes, 
+            sizeof(md->uncheckedNodes) - sizeof(struct uncheckedNode *)
+        );
+        md->numUncheckedNodes --;
+        md->uncheckedNodes = updatedUncheckedNodes;
+    }
 }
 
 /**
@@ -66,13 +216,28 @@ void minimize(MassDawg * md, int downTo){
  * to the insertion (for many insertions) must be sorted.
  * 
  * @param md MassDawg * the MassDawg struct to insert into
- * @param seqeunce double [] the list of doubles that make up 
- * @param kmer char ** the sequence of amino acids associated with these masses
+ * @param singlySeqeunce double * the list of doubles that make up the singly charged spectrum
+ * @param doublySequence double * the list of doubles that make up the doubly charged spectrum
+ * @param kmer char * the sequence of amino acids associated with these masses
+ * @param sequenceLength int the length of the sequence
 */
-void insert(MassDawg * md, double * sequence, char ** kmer){
+void insert(MassDawg * md, double * singlySequence, double * doublySequence, char * kmer, int sequenceLength){
+
     // if the previous sequence is not none (from init) and the 
     // new sequence is > the old sequence, then we need to error
-    if (md->previousSequence->length > 0 && compareDoubleArrays(sequence, md->previousSequence->sequence)){
+    if (md->previousSequence->length > 0 
+        && compareDoubleArrays(
+                singlySequence, 
+                md->previousSequence->singlySequence, 
+                sequenceLength, 
+                md->previousSequence->length
+            )
+        && compareDoubleArrays(
+                doublySequence, 
+                md->previousSequence->doublySequence,
+                sequenceLength, 
+                md->previousSequence->length
+    )){
         printf("ERROR: Input sequence must be less than the last sequence.");
         return;
     }
@@ -84,7 +249,10 @@ void insert(MassDawg * md, double * sequence, char ** kmer){
     int commonPrefixLength = 0;
 
     // minimum iterative length between the two sequences
-    int iterLength = MIN(DOUBLE_ARR_LEN(sequence), DOUBLE_ARR_LEN(md->previousSequence->sequence));
+    int iterLength = MIN(
+        sequenceLength, 
+        md->previousSequence->length
+    );
 
     // go through each of the values in the two sequences and compare values until
     // we either run out of values or the two differ
@@ -92,7 +260,8 @@ void insert(MassDawg * md, double * sequence, char ** kmer){
         
         // check to see if values at the two sequences at position i are the same.
         // if not, break 
-        if (sequence[i] != md->previousSequence->sequence[i]) break;
+        if (singlySequence[i] != md->previousSequence->singlySequence[i]
+            || doublySequence[i] != md->previousSequence->doublySequence[i]) break;
 
         // for the last seuqnce, add the kmer up to this point to that node
         char newKmer[i+1];
@@ -109,14 +278,14 @@ void insert(MassDawg * md, double * sequence, char ** kmer){
 
         for (int kmerIdx = 0; kmerIdx < numKmersInNode; i++){
             // check to see if the two strings are equal
-            if (strcmp(newKmer, currentNodeInPrevious->kmers[i]) != 0) {
+            if (strcmp(newKmer, currentNodeInPrevious->kmers[i]) == 0) {
                 kmerFound = 1;
                 break;
             }
         }
 
         // if the kmer wasn't found, add it to the node
-        if (kmerFound == 1) addKmer(newKmer, currentNodeInPrevious);
+        if (kmerFound == 0) addKmer(newKmer, currentNodeInPrevious);
 
         // we've made it this far so we increment
         commonPrefixLength ++;
@@ -130,7 +299,55 @@ void insert(MassDawg * md, double * sequence, char ** kmer){
 
     //add the suffix, starting from the correct node mid-way through the graph
     if (md->numUncheckedNodes == 0) currentNode = md->root;
-    // get the next node (should be one) of the last unchecked node
-    else currentNode = md->uncheckedNodes[md->numUncheckedNodes - 1]->edges[0]->child;
+    // get the child of the last unchecked nodes
+    else currentNode = md->uncheckedNodes[md->numUncheckedNodes - 1]->child;
 
+    // create the new previous sequence that will contain all the new information for this new 
+    // singly and doubly sequence
+    struct PreviousSequence * nextPreviousSequence = initPreviousSequence(sequenceLength);
+    nextPreviousSequence->singlySequence = singlySequence;
+    nextPreviousSequence->doublySequence = doublySequence;
+
+    // copy over all of the old nodes from the old previous to the new
+    for (int i = 0; i < commonPrefixLength; i++){
+        nextPreviousSequence->nodes[i] = md->previousSequence->nodes[i];
+    }
+
+    free(md->previousSequence);
+
+    for (int i = commonPrefixLength; i < sequenceLength; i++){
+
+        // get the kmer for this set of masses
+        char* newKmer = malloc((i+2) * sizeof(char));
+        strncpy(newKmer, kmer, i+1);
+        newKmer[i+1] = '\0'; 
+
+        // create a new edge and node onto the current node
+        MassDawgNode * newChild = addNewNode(currentNode, newKmer, singlySequence[i], doublySequence[i]);
+
+        // append it to the previous sequence
+        nextPreviousSequence->nodes[i] = newChild;
+
+        // create a new unchecked node struct to append to the unckecked nodes 
+        struct uncheckedNode * thisUncheckedNode = malloc(sizeof(struct uncheckedNode));
+        thisUncheckedNode->child = newChild;
+        thisUncheckedNode->parent = currentNode;
+        thisUncheckedNode->singlyEdgeMass = singlySequence[i];
+
+        // increment the unchecked node count and realloc memory for the new pointer
+        struct uncheckedNode ** updatedList = realloc(
+            md->uncheckedNodes,
+            sizeof(md->uncheckedNodes) + sizeof(struct uncheckedNode *)
+        );
+        updatedList[md->numUncheckedNodes] = thisUncheckedNode;
+        md->numUncheckedNodes ++;
+        md->uncheckedNodes = updatedList;
+
+        // set node to the child node
+        currentNode = newChild;
+    }
+
+    // set the last node's final value to true and the previous sequence to the next previous sequence
+    currentNode->final = 1;
+    md->previousSequence = nextPreviousSequence;
 }
