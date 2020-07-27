@@ -39,7 +39,7 @@ typedef struct massDawg {
 */
 struct PreviousSequence * initPreviousSequence(int length) {
     struct PreviousSequence * ps = malloc(sizeof(struct PreviousSequence));
-    MassDawgNode * nodes[length];
+    MassDawgNode ** nodes = malloc(sizeof(MassDawgNode *) * length);
     double singlySequence[length];
     double doublySequence[length];
 
@@ -49,6 +49,22 @@ struct PreviousSequence * initPreviousSequence(int length) {
     ps->length = length;
     
     return ps;
+}
+
+/**
+ * Delete a previousSequence struct, pointing all pointers to NULL
+ * instead of freeing the nodes. 
+ * 
+ * @param ps struct PreviousSequence * the previous sequence
+*/
+void clearPreviousSequnce(struct PreviousSequence * ps){
+    for (int i = 0; i < ps->length; i ++){
+        ps->nodes[i] = NULL;
+    }
+    free(ps->nodes);
+    ps->nodes = NULL;
+    free(ps);
+    ps = NULL;
 }
 
 /**
@@ -140,7 +156,7 @@ MassDawg * initMassDawg(){
 */
 void minimize(MassDawg * md, int downTo){
 
-    for (int i = md->numUncheckedNodes - 1; downTo; i--){
+    for (int i = md->numUncheckedNodes - 1; i > downTo - 1; i--){
 
         struct uncheckedNode * checkingNode = md->uncheckedNodes[i];
 
@@ -226,18 +242,18 @@ void insert(MassDawg * md, double * singlySequence, double * doublySequence, cha
     // if the previous sequence is not none (from init) and the 
     // new sequence is > the old sequence, then we need to error
     if (md->previousSequence->length > 0 
-        && compareDoubleArrays(
+        &&(compareDoubleArrays(
                 singlySequence, 
                 md->previousSequence->singlySequence, 
                 sequenceLength, 
                 md->previousSequence->length
             )
-        && compareDoubleArrays(
+        || compareDoubleArrays(
                 doublySequence, 
                 md->previousSequence->doublySequence,
                 sequenceLength, 
                 md->previousSequence->length
-    )){
+    ))){
         printf("ERROR: Input sequence must be less than the last sequence.");
         return;
     }
@@ -263,29 +279,15 @@ void insert(MassDawg * md, double * singlySequence, double * doublySequence, cha
         if (singlySequence[i] != md->previousSequence->singlySequence[i]
             || doublySequence[i] != md->previousSequence->doublySequence[i]) break;
 
-        // for the last seuqnce, add the kmer up to this point to that node
-        char newKmer[i+1];
-        strncpy(newKmer, kmer, i);
-        newKmer[i] = '\0'; 
+        // add the current kmer from 0 to i to the node at i in the previous sequence
+        // start by getting the correct kmer from the string passed in
+        char* newKmer = malloc((i+2) * sizeof(char));
+        strncpy(newKmer, kmer, i+1);
+        newKmer[i+1] = '\0'; 
 
-        // check to see if any of the strings in this node (from previous sequence)
-        // are this kmer. If no, add it
-        MassDawgNode * currentNodeInPrevious = md->previousSequence->nodes[i];
-        int numKmersInNode = STR_ARR_LEN(currentNodeInPrevious->kmers);
-
-        // keep track if the kmer is found
-        int kmerFound = 0;
-
-        for (int kmerIdx = 0; kmerIdx < numKmersInNode; i++){
-            // check to see if the two strings are equal
-            if (strcmp(newKmer, currentNodeInPrevious->kmers[i]) == 0) {
-                kmerFound = 1;
-                break;
-            }
-        }
-
-        // if the kmer wasn't found, add it to the node
-        if (kmerFound == 0) addKmer(newKmer, currentNodeInPrevious);
+        // add the kmer to the node. MassDawgNode checks for duplicates, so we just need to 
+        // pass the kmer in here and let it handle the rest
+        addKmer(md->previousSequence->nodes[i], newKmer);
 
         // we've made it this far so we increment
         commonPrefixLength ++;
@@ -313,7 +315,7 @@ void insert(MassDawg * md, double * singlySequence, double * doublySequence, cha
         nextPreviousSequence->nodes[i] = md->previousSequence->nodes[i];
     }
 
-    free(md->previousSequence);
+    clearPreviousSequnce(md->previousSequence);
 
     for (int i = commonPrefixLength; i < sequenceLength; i++){
 
@@ -323,7 +325,7 @@ void insert(MassDawg * md, double * singlySequence, double * doublySequence, cha
         newKmer[i+1] = '\0'; 
 
         // create a new edge and node onto the current node
-        MassDawgNode * newChild = addNewNode(currentNode, newKmer, singlySequence[i], doublySequence[i]);
+        MassDawgNode * newChild = addChild(currentNode, newKmer, singlySequence[i], doublySequence[i]);
 
         // append it to the previous sequence
         nextPreviousSequence->nodes[i] = newChild;
@@ -334,14 +336,15 @@ void insert(MassDawg * md, double * singlySequence, double * doublySequence, cha
         thisUncheckedNode->parent = currentNode;
         thisUncheckedNode->singlyEdgeMass = singlySequence[i];
 
-        // increment the unchecked node count and realloc memory for the new pointer
-        struct uncheckedNode ** updatedList = realloc(
-            md->uncheckedNodes,
-            sizeof(md->uncheckedNodes) + sizeof(struct uncheckedNode *)
+        // increment the size of the unchecked node list
+        md->uncheckedNodes = realloc(
+            md->uncheckedNodes, 
+            sizeof(struct uncheckedNode *) * (md->numUncheckedNodes + 1)
         );
-        updatedList[md->numUncheckedNodes] = thisUncheckedNode;
+
+        // append the new unchecked node to the end of the list and increment our count
+        md->uncheckedNodes[md->numUncheckedNodes] = thisUncheckedNode;
         md->numUncheckedNodes ++;
-        md->uncheckedNodes = updatedList;
 
         // set node to the child node
         currentNode = newChild;

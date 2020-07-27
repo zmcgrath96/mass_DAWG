@@ -67,24 +67,34 @@ void deleteMassDawgNode(MassDawgNode * mdn) {
 }
 
 /**
- * Add a new kmer to the list of kmers in a mass dawg node
+ * Add a new kmer to the list of kmers in a mass dawg node. 
+ * Node is checked for the value being passed in to ensure that
+ * a kmer is not duplicated
  * 
+ * @param mdn MassDawgNode *   the node to add a kmer to
  * @param kmer char *      the new string to add 
- * @param mdn MassDawgNode *   the node to add a kmer too
  * 
  * @return void
  * 
 */
-void addKmer(char * kmer, MassDawgNode * mdn){
-    //reallocate the memory for kmers to add a new one
-    char ** newKmers = realloc(mdn->kmers, sizeof(mdn->kmers) + sizeof(char*));
-    
-    // add the new kmers to the end of the kmers
-    int numKmers = sizeof(newKmers)/sizeof(char *);
-    newKmers[numKmers-1] = kmer;
+void addKmer(MassDawgNode * mdn, char * kmer){
+    // First check to see if this kmer exists in the nodes kmer set
+    int kmerFound = 0;
+    for (int i = 0; i < mdn->numKmers; i++){
+        // check to see if the string is found. 0 is returned from strcmp if they are equal
+        if (strcmp(kmer, mdn->kmers[i]) == 0){
+            kmerFound = 1;
+            break;
+        }
+    }
 
-    // add it to the node
-    mdn->kmers = newKmers;
+    // if the kmer was found, return
+    if (kmerFound == 1) return;
+
+    // otherwise create new room for this kmer and add it to the list
+    //reallocate the memory for kmers to add a new one
+    mdn->kmers = realloc(mdn->kmers, sizeof(char *) * mdn->numKmers);
+    mdn->kmers[mdn->numKmers-1] = kmer;
     mdn->numKmers ++;
 }
 
@@ -97,7 +107,7 @@ void addKmer(char * kmer, MassDawgNode * mdn){
  * 
  * @return MassDawgNode *           the new child node of the new edge
 */
-MassDawgNode * addNewNode(MassDawgNode * mdn, char * kmer, double singlyMass, double doublyMass){
+MassDawgNode * addChild(MassDawgNode * mdn, char * kmer, double singlyMass, double doublyMass){
 
     // create the new mass node
     MassDawgNode * newNode = initMassDawgNode();

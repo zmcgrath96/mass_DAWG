@@ -9,23 +9,22 @@ int main(){
     // make a mass dawg and add a mass to it
     MassDawg * md = initMassDawg();
 
-    double singly[4] = {100.1, 200.2, 300.3, 400.4};
-    double doubly[4] = {200.2, 400.4, 600.6, 800.8};
-
-    // printf("Making a new node and adding a kmer to it...\n");
-    // MassDawgNode * newNode = initMassDawgNode();
-    // addKmer("ABC", newNode);
-
-    // printf("Adding a child to the node\n");
-    // addNewNode(newNode, "ABCD", 100.1, 200.2);
-
-    // printf("Deleting the nodes...\n");
-    // deleteMassDawgNode(newNode);
+    double singly[3] = {100.1, 200.2, 300.3};
+    double doubly[3] = {200.2, 400.4, 600.6};
 
     printf("Inserting a singly and doubly sequence with kmer ABC into DAWG\n");
-    insert(md, singly, doubly, "ABCD", 4);
+    insert(md, singly, doubly, "ABC", 3);
 
     // go through the graph at this point and print things out to see if it inserted
+    printf("");
+    showDawg(md);
+
+    double singly2[4] = {100.1, 200.2, 300.3, 400.4};
+    double doubly2[4] = {200.2, 400.4, 600.6, 800.8};
+
+    printf("\nInserting a singly and doubly sequence with kmer ABCD into DAWG\n");
+    insert(md, singly2, doubly2, "ABCD", 4);
+
     printf("");
     showDawg(md);
 
