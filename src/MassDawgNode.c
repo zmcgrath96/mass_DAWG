@@ -20,7 +20,7 @@ struct Edge {
 /**
  * Allocate memory for a new MassDawgNode and init to 0s and NULL
  * 
- * @return MassDawgNode* to the new mass node
+ * @return  MassDawgNode*   pointer to the new mass node
  * 
 */
 MassDawgNode * initMassDawgNode() {
@@ -37,7 +37,7 @@ MassDawgNode * initMassDawgNode() {
 /**
  * Allocate memory for a new Edge and init to 0s and NULL
  * 
- * @return struct Edge *
+ * @return  struct Edge *
 */
 struct Edge * initEdge(){
     struct Edge * edge = malloc(sizeof(struct Edge));
@@ -51,10 +51,7 @@ struct Edge * initEdge(){
 /**
  * Recursively delete a MassDawgNode and all of its children
  * 
- * @param mdn (MassDawgNode *) the mass dawg node to free
- * 
- * @return void
- * 
+ * @param mdn   MassDawgNode *  the mass dawg node to free
  */
 void deleteMassDawgNode(MassDawgNode ** mdn) {
     // delete any and all children
@@ -101,7 +98,7 @@ void deleteMassDawgNode(MassDawgNode ** mdn) {
 /**
  * Recuresively delete an edge and its children
  * 
- * @param edge struct Edge * the edge to delete
+ * @param edge  struct Edge *   the edge to delete
 */
 void deleteEdge(struct Edge * edge){
     // delete its child first
@@ -117,8 +114,8 @@ void deleteEdge(struct Edge * edge){
 /**
  * Remove the edge at the provided index from the node
  * 
- * @param mdn MassDawgNode * the node to remove the edge from
- * @param edgeIndex int     the index in the edge array to remove
+ * @param mdn       MassDawgNode *  the node to remove the edge from
+ * @param edgeIndex int             the index in the edge array to remove
 */
 void removeEdgeFromNode(MassDawgNode * mdn, int edgeIndex){
     deleteEdge(mdn->edges[edgeIndex]);
@@ -144,8 +141,8 @@ void removeEdgeFromNode(MassDawgNode * mdn, int edgeIndex){
  * Node is checked for the value being passed in to ensure that
  * a kmer is not duplicated
  * 
- * @param mdn MassDawgNode *   the node to add a kmer to
- * @param kmer char *      the new string to add 
+ * @param mdn   MassDawgNode *  the node to add a kmer to
+ * @param kmer  char *          the new string to add 
  * 
  * @return void
  * 
@@ -177,9 +174,9 @@ void addKmer(MassDawgNode * mdn, char * kmer){
 /**
  * Add a new edge with a kmer and mass to the node
  * 
- * @param mdn MassDawgNode *         the node to add an edge to
- * @param kmer char *               the new kmer associated with the new node
- * @param mass double                the new mass to associate with the new node
+ * @param mdn   MassDawgNode *  the node to add an edge to
+ * @param kmer  char *          the new kmer associated with the new node
+ * @param mass  double          the new mass to associate with the new node
  * 
  * @return MassDawgNode *           the new child node of the new edge
 */
@@ -215,8 +212,8 @@ MassDawgNode * addChild(MassDawgNode * mdn, char * kmer, double singlyMass, doub
 /**
  * Determine if a node has a child with a value equal to the input value
  * 
- * @param mdn MassDawgNode * the node to check children of 
- * @param mass double the mass to check for
+ * @param mdn   MassDawgNode *  the node to check children of 
+ * @param mass  double          the mass to check for
  * 
  * @return int 0 if the mass is not found, 1 otherwise
  */ 
@@ -234,8 +231,8 @@ int hasChildWithValue(MassDawgNode * mdn, double mass) {
  * An empty MassDawgNode pointer is returned if 
  * the child does not exist
  * 
- * @param mdn MassDawgNode * the node to check the children of
- * @param mass the mass to retrieve the child of
+ * @param mdn   MassDawgNode *  the node to check the children of
+ * @param mass  double          the mass to retrieve the child of
  * 
  * @return MassDawgNode *
 */
@@ -252,8 +249,8 @@ MassDawgNode * getChildWithValue(MassDawgNode * mdn, double mass){
 /**
  * Determine if two edges are equl by their values
  * 
- * @param edge1 Edge * the first edge in the comparison
- * @param edge2 Edge * the second edge in the comparison
+ * @param edge1 Edge *  the first edge in the comparison
+ * @param edge2 Edge *  the second edge in the comparison
  * 
  * @return int 0 if the two are not equivalent, 1 otherwize
 */
@@ -267,8 +264,8 @@ int edgesEqual(struct Edge * edge1, struct Edge * edge2){
 /**
  * Determine if two nodes are equal by their edge values, not kmer values
  * 
- * @param node1 MassDawgNode * the first node in the comparison
- * @param node2 MassDawgNode * the second node in the comparison
+ * @param node1 MassDawgNode *  the first node in the comparison
+ * @param node2 MassDawgNode *  the second node in the comparison
  * 
  * @return int 0 if the two are not equivalent, 1 otherwise
 */
@@ -303,8 +300,8 @@ int nodesEqual(MassDawgNode * node1, MassDawgNode * node2){
 /**
  * Recursively show this node and all of its descendants
  * 
- * @param mdn MassDawgNode *    the node to show and its descendants
- * @param spaces int            the number of spaces to print before
+ * @param mdn       MassDawgNode *  the node to show and its descendants
+ * @param spaces    int             the number of spaces to print before
 */
 void showNode(MassDawgNode * mdn, int spaces){
     for (int i = 0; i < spaces; i ++) printf(" ");

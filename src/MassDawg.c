@@ -33,7 +33,7 @@ typedef struct massDawg {
  * Create a new previous sequence struct with the number of 
  * sequences and MassDawgNodes specified
  * 
- * @param length int the number of elements of this 
+ * @param length    int     the number of elements of this 
  * 
  * @return PreviousSequence * 
 */
@@ -92,7 +92,7 @@ MassDawg * initMassDawg(){
  * Delete a previousSequence struct, pointing all pointers to NULL
  * instead of freeing the nodes. 
  * 
- * @param ps struct PreviousSequence * the previous sequence
+ * @param ps    struct PreviousSequence *   the previous sequence
 */
 void clearPreviousSequnce(struct PreviousSequence * ps){
     for (int i = 0; i < ps->length; i ++){
@@ -107,7 +107,7 @@ void clearPreviousSequnce(struct PreviousSequence * ps){
 /**
  * Delete an UncheckedNode struct and set its pointers to NULL
  * 
- * @param un struct UncheckedNode * the node to clear
+ * @param un    struct UncheckedNode *  the node to clear
 */
 void clearUncheckedNode(struct UncheckedNode * un){
     un->parent = NULL;
@@ -120,7 +120,7 @@ void clearUncheckedNode(struct UncheckedNode * un){
 /**
  * Recursively print the graph as a tree
  * 
- * @param md MassDawg * the mass dawg to print
+ * @param md    MassDawg *  the mass dawg to print
  */
 void showDawg(MassDawg * md){
     printf("root\n");
@@ -135,8 +135,8 @@ void showDawg(MassDawg * md){
 /**
  * Combine all possible nodes that can be combined from here down
  * 
- * @param md MassDawg * the graph we are reducing
- * @param downTo int the level of the graph down to which we should look to combine nodes
+ * @param md        MassDawg *  the graph we are reducing
+ * @param downTo    int         the level of the graph down to which we should look to combine nodes
 */
 void minimize(MassDawg * md, int downTo){
 
@@ -221,11 +221,11 @@ void minimize(MassDawg * md, int downTo){
  * Insert a sequence of masses into the Dawg. The input 
  * to the insertion (for many insertions) must be sorted.
  * 
- * @param md MassDawg * the MassDawg struct to insert into
- * @param singlySeqeunce double * the list of doubles that make up the singly charged spectrum
- * @param doublySequence double * the list of doubles that make up the doubly charged spectrum
- * @param kmer char * the sequence of amino acids associated with these masses
- * @param sequenceLength int the length of the sequence
+ * @param md                MassDawg * the MassDawg struct to insert into
+ * @param singlySeqeunce    double * the list of doubles that make up the singly charged spectrum
+ * @param doublySequence    double * the list of doubles that make up the doubly charged spectrum
+ * @param kmer              char * the sequence of amino acids associated with these masses
+ * @param sequenceLength    int the length of the sequence
 */
 void insert(MassDawg * md, double * singlySequence, double * doublySequence, char * kmer, int sequenceLength){
 
@@ -347,10 +347,30 @@ void insert(MassDawg * md, double * singlySequence, double * doublySequence, cha
 
 
 /**
+ * Use a sequence as a guide through the graph. Up to gap
+ * missing links are allowed in the graph before returning the
+ * value found at that depth. 
+ * 
+ * @example
+ *      input sequence: [100, 200, 500]
+ *      graph:          [(100, A), (200, AB), (300, ABC ABX), 
+ *                      (400, ABCD ABXY), (500, ABCDE ABXYZ)]
+ *      if gap is 0 or 1, the return will be AB
+ *      if gap is 2 +, output will be ABCDE ABXYZ
+ * 
+ * @param sequence  double *    list of doubles to use to traverse
+ * @param gap       int         the number of missing links to allow
+ * @param ppm_tol   int         the tolerance to allow when searching for matches
+ * 
+ * @return char **              list of kmers that match the input sequence
+*/
+
+
+/**
  * Complete the DAWG by minimizing all unchecked nodes that remain. 
  * All minimized and unchecked nodes are cleared
  * 
- * @param md MassDawg * the dawg to finish
+ * @param md    MassDawg *  the dawg to finish
 */
 void finish(MassDawg * md){
     minimize(md, 0);
@@ -368,7 +388,7 @@ void finish(MassDawg * md){
 /**
  * Delete the nodes from the tree and free up all memory
  * 
- * @param md MassDawg * the mass dawg to delete
+ * @param md    MassDawg *  the mass dawg to delete
 */
 void deleteMassDawg(MassDawg * md){
  
