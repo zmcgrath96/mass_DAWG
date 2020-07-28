@@ -1,4 +1,5 @@
 #include <string.h>
+#include <stdlib.h>
 
 #include "utils.c"
 
@@ -16,21 +17,35 @@ struct Edge {
     double doublyMass;
 };
 
-#define EDGE_ARR_SIZE(edges)    ((int)sizeof(edges)/sizeof(struct Edge *))
-
 /**
- * Allocate memory for a new MassDawgNode and init final to 0
+ * Allocate memory for a new MassDawgNode and init to 0s and NULL
  * 
  * @return MassDawgNode* to the new mass node
  * 
 */
 MassDawgNode * initMassDawgNode() {
-    MassDawgNode * mdn;
-    mdn = malloc(sizeof(MassDawgNode));
+    MassDawgNode * mdn = malloc(sizeof(MassDawgNode));
     mdn->final = 0;
     mdn->numEdges = 0;
     mdn->numKmers = 0;
+
+    mdn->edges = NULL;
+    mdn->kmers = NULL;
     return mdn;
+}
+
+/**
+ * Allocate memory for a new Edge and init to 0s and NULL
+ * 
+ * @return struct Edge *
+*/
+struct Edge * initEdge(){
+    struct Edge * edge = malloc(sizeof(struct Edge));
+    edge->doublyMass = 0.0;
+    edge->singlyMass = 0.0;
+    edge->child = NULL;
+
+    return edge;
 }
 
 /**
@@ -41,29 +56,87 @@ MassDawgNode * initMassDawgNode() {
  * @return void
  * 
  */
-void deleteMassDawgNode(MassDawgNode * mdn) {
+void deleteMassDawgNode(MassDawgNode ** mdn) {
     // delete any and all children
-    if (mdn->numEdges > 0){
+    if ((*mdn)->numEdges > 0){
         // go through all of the edges and call delete on their children        
-        for (int i = 0; i < mdn->numEdges; i++){
-            deleteMassDawgNode(mdn->edges[i]->child);
-            free(mdn->edges[i]);
-            mdn->edges[i] = NULL;
+        for (int i = 0; i < (*mdn)->numEdges; i++){
+
+            // check first to see if someone else deleted this child
+            if ((*mdn)->edges == NULL || &(*mdn)->edges[i] == NULL 
+                || (*mdn)->edges[i]->child==NULL) continue;
+            deleteMassDawgNode(&(*mdn)->edges[i]->child);
+            free((*mdn)->edges[i]);
+            (*mdn)->edges[i] = NULL;
         }
     }
-    mdn->edges = NULL;
+    if ((*mdn)->edges != NULL){
+        free((*mdn)->edges);
+        (*mdn)->edges = NULL;
+    }
+    
 
     // delete all kmers
-    if (mdn->numKmers > 0){
-        for (int i = 0; i < mdn->numKmers; i++){
-            free(mdn->kmers[i]);
-            mdn->kmers[i] = NULL;
+    if ((*mdn)->numKmers > 0){
+        for (int i = 0; i < (*mdn)->numKmers; i++){
+            free((*mdn)->kmers[i]);
+            (*mdn)->kmers[i] = NULL;
         }
     }
-    mdn->kmers = NULL;
+    if ((*mdn)->kmers != NULL){
+        free((*mdn)->kmers);
+        (*mdn)->kmers = NULL;
+    }
+    
 
-    free(mdn);
-    mdn = NULL;
+    // set ints to 0 just in case
+    (*mdn)->numEdges = 0;
+    (*mdn)->numKmers = 0;
+    (*mdn)->final = 0;
+
+    if(*mdn != NULL) free(*mdn);
+    *mdn = NULL;
+}
+
+/**
+ * Recuresively delete an edge and its children
+ * 
+ * @param edge struct Edge * the edge to delete
+*/
+void deleteEdge(struct Edge * edge){
+    // delete its child first
+    if (edge->child != NULL){
+        deleteMassDawgNode(&edge->child);;
+        edge->child = NULL;
+    }
+
+    free(edge);
+    edge = NULL;    
+}
+
+/**
+ * Remove the edge at the provided index from the node
+ * 
+ * @param mdn MassDawgNode * the node to remove the edge from
+ * @param edgeIndex int     the index in the edge array to remove
+*/
+void removeEdgeFromNode(MassDawgNode * mdn, int edgeIndex){
+    deleteEdge(mdn->edges[edgeIndex]);
+    mdn->edges[edgeIndex] = NULL;
+
+    // shift all of the elements over to the left one index
+    for (int shiftedIndex = edgeIndex; shiftedIndex < mdn->numEdges - 1; shiftedIndex ++){
+        mdn->edges[shiftedIndex] = mdn->edges[shiftedIndex + 1];
+    }
+    
+    // resize the edges array to be 1 less
+    mdn->edges = realloc(
+        mdn->edges, 
+        sizeof(struct Edge *) * (mdn->numEdges - 1)
+    );
+
+    // decrement the edge counter
+    mdn->numEdges --;
 }
 
 /**
@@ -93,8 +166,11 @@ void addKmer(MassDawgNode * mdn, char * kmer){
 
     // otherwise create new room for this kmer and add it to the list
     //reallocate the memory for kmers to add a new one
-    mdn->kmers = realloc(mdn->kmers, sizeof(char *) * mdn->numKmers);
-    mdn->kmers[mdn->numKmers-1] = kmer;
+    mdn->kmers = realloc(mdn->kmers, sizeof(char *) * (mdn->numKmers +1));
+    char * addingKmer = malloc(sizeof(char) * (strlen(kmer) + 1));
+    strcpy(addingKmer, kmer);
+    addingKmer[strlen(kmer)] = '\0';
+    mdn->kmers[mdn->numKmers] = addingKmer;
     mdn->numKmers ++;
 }
 
@@ -116,7 +192,7 @@ MassDawgNode * addChild(MassDawgNode * mdn, char * kmer, double singlyMass, doub
     newNode->numKmers ++;
 
     // make a new edge
-    struct Edge * newEdge = malloc(sizeof(struct Edge));
+    struct Edge * newEdge = initEdge();
     newEdge->singlyMass = singlyMass;
     newEdge->doublyMass = doublyMass;
     newEdge->child = newNode;
@@ -189,7 +265,7 @@ int edgesEqual(struct Edge * edge1, struct Edge * edge2){
 }
 
 /**
- * Determine if two nodes are equal by thier values
+ * Determine if two nodes are equal by their edge values, not kmer values
  * 
  * @param node1 MassDawgNode * the first node in the comparison
  * @param node2 MassDawgNode * the second node in the comparison
@@ -201,49 +277,24 @@ int nodesEqual(MassDawgNode * node1, MassDawgNode * node2){
     // check the final values first
     if (node1->final != node2->final) return 0;
 
-    // check each kmer
-    int numNode1Kmers = STR_ARR_LEN(node1->kmers);
-    int numNode2Kmers = STR_ARR_LEN(node2->kmers);
-
-    if (numNode1Kmers != numNode2Kmers)return 0;
-
-    // check to see if each kmer value is equal
-    for (int i = 0; i < numNode2Kmers; i++){
-
-        int strFound = 0;
-        // look through all of node 1 kmers to see if they are the same
-        for (int j = 0; j < numNode1Kmers; j++){
-            if (strcmp(node1->kmers[j], node2->kmers[i]) == 0){
-                strFound = 1;
-                break;
-            }
-        }
-        
-        // if not found, return 0
-        if (strFound == 0) return 0;
-    }
-
     // check to see if the num of edges are the same and that each 
     // edge has the same value
-    int numNode1Edges = EDGE_ARR_SIZE(node1->edges);
-    int numNode2Edges = EDGE_ARR_SIZE(node2->edges);
-
-    if (numNode1Edges != numNode2Edges) return 0;
+    if (node1->numEdges != node2->numEdges) return 0;
 
     // iterate through all edges to see if all edges are there
-    for (int i = 0; i < numNode2Edges; i ++){
+    for (int i = 0; i < node1->numEdges; i ++){
 
         int edgeFound = 0;
         // see if any of the edges are the same
-        for (int j = 0; j < numNode2Edges; j ++){
-            if (edgesEqual(node1->edges[j], node2->edges[i]) == 1){
+        for (int j = 0; j < node2->numEdges; j ++){
+            if (edgesEqual(node1->edges[i], node2->edges[j]) == 1){
                 edgeFound = 1;
                 break;
             }
-
-            // if the edge wasn't found, retur0
-            if (edgeFound == 0) return 0;
         }
+
+        // if the edge wasn't found, return 0
+        if (edgeFound == 0) return 0;
     }
 
     return 1;

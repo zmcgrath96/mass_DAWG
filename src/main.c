@@ -15,10 +15,6 @@ int main(){
     printf("Inserting a singly and doubly sequence with kmer ABC into DAWG\n");
     insert(md, singly, doubly, "ABC", 3);
 
-    // go through the graph at this point and print things out to see if it inserted
-    printf("");
-    showDawg(md);
-
     double singly2[4] = {100.1, 200.2, 300.3, 400.4};
     double doubly2[4] = {200.2, 400.4, 600.6, 800.8};
 
@@ -28,7 +24,18 @@ int main(){
     printf("");
     showDawg(md);
 
+    double singly3[4] = {100.1, 201.21, 302.32, 400.4};
+    double doubly3[4] = {200.2, 402.42, 604.64, 800.8};
+    printf("\nInserting a singly and doubly sequence with kmer AXYD into DAWG");
+    insert(md, singly3, doubly3, "AXYD", 4);
+
+    // finish the dawg
+    printf("\nFinishing the dawg\n");
+    finish(md);
+
+    printf("");
+    showDawg(md);
+
     // clean up and remove the dawg
-    deleteMassDawgNode(md->root);
-    free(md);
+    deleteMassDawg(md);
 }
