@@ -39,5 +39,7 @@ int main(){
     cout << "inserting AXYD int graph";
     md->insert(singly, doubly, sequence);
 
+    md->finish();
+
     md->show();
 }

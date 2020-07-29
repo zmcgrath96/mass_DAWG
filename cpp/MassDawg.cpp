@@ -14,11 +14,7 @@ MassDawg::~MassDawg(){
 */
 void MassDawg::show(){
     cout << "\nroot\n";
-    for (int i  = 0; i < this->root->edges.size(); i ++){
-        for (int j = 0; j < 2; j++) cout << " ";
-        cout << "edge masses: " + to_string(this->root->edges[i]->singlyMass) + ", " + to_string(this->root->edges[i]->doublyMass) + "\n";
-        this->root->edges[i]->child->show(4);
-    }
+    for (int i  = 0; i < this->root->children.size(); i ++) this->root->children[i]->show(2);
 }
 
 /**
@@ -76,28 +72,35 @@ void MassDawg::insert(vector<double> singlySequence, vector<double> doublySequen
     for (int i = commonPrefix; i < singlySequence.size(); i ++){
 
         // add a new child to my current node
-        Edge * newEdge = currentNode->addChild(
+        MassDawgNode * newChild = currentNode->addChild(
             singlySequence[i], 
             doublySequence[i], 
             kmer.substr(0, i + 1)
         );
 
         // add the pointer to the next node to previous nodes
-        nextPreviousSequence.nodes.push_back(newEdge->child);
+        nextPreviousSequence.nodes.push_back(newChild);
 
         // create the another unchecked node and add it to the list
         UncheckedNode un;
-        un.child = newEdge->child;
+        un.child = newChild;
         un.parent = currentNode;
-        un.connector = newEdge;
         this->uncheckedNodes.push_back(un);
 
-        currentNode = newEdge->child;
+        currentNode = newChild;
     }
 
     // update the previous sequence to be this sequence
     this->ps = nextPreviousSequence;
 }
+
+    /**
+     * Any remaining unchecked nodes will be checked for merging to 
+     * complete the dawg. 
+    */
+    void MassDawg::finish(){
+        this->minimize(0);
+    }
 
 /**
  * What makes this a graph and not a tree. Combines nodes that share edges and values
@@ -113,7 +116,7 @@ void MassDawg::minimize(int downTo){
         // local variables to make things easier
         UncheckedNode currentUnchecked = this->uncheckedNodes.back();
         MassDawgNode * child = currentUnchecked.child;
-        Edge * parentToChild = currentUnchecked.connector;
+        MassDawgNode * parent = currentUnchecked.parent;
 
         // get the hashable value of the child 
         string childsHash = child->hash();
@@ -136,10 +139,18 @@ void MassDawg::minimize(int downTo){
             for (int j = 0; j < child->kmers.size(); j++){
                 minimizedNode->addKmer(child->kmers[j]);
             }
+            
+            // find the child of the parent that pointed to the node
+            // and update that pointer to point to minimizedNode
+            for (int j = 0; j < parent->children.size(); j ++){
+                if (parent->children[j] == child) {
+                    parent->children[j] = minimizedNode;
+                    break;
+                }
+            }
+            
             // delete child
             delete child;
-            // point the edge to the minimized node
-            parentToChild->child = minimizedNode;
         }
 
         // remove the one we just finished working on

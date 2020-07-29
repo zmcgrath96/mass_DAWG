@@ -1,13 +1,14 @@
 #include "MassDawgNode.hpp"
-#include "Edge.hpp"
 #include "utils.cpp"
 
 
 MassDawgNode::MassDawgNode (){}
 
 // init with a string
-MassDawgNode::MassDawgNode (string kmer){
+MassDawgNode::MassDawgNode (double singlyMass, double doublyMass, string kmer){
         this->kmers.push_back(kmer);
+        this->singlyMass = singlyMass;
+        this->doublyMass = doublyMass;
     }
 
 MassDawgNode::~MassDawgNode(){}
@@ -34,11 +35,11 @@ void MassDawgNode::addKmer (string kmer){
  * 
  * @return Edge *       edge connecting the parent to the new child
 */
-Edge * MassDawgNode::addChild(double singlyMass, double doublyMass, string kmer){
-    Edge * edge = new Edge(singlyMass, doublyMass, kmer);
-    this->edges.push_back(edge);
+MassDawgNode * MassDawgNode::addChild(double singlyMass, double doublyMass, string kmer){
+    MassDawgNode * newChild = new MassDawgNode(singlyMass, doublyMass, kmer);
+    this->children.push_back(newChild);
 
-    return edge;
+    return newChild;
 }
 
 /**
@@ -48,27 +49,7 @@ Edge * MassDawgNode::addChild(double singlyMass, double doublyMass, string kmer)
  * @return string   the hashable string
 */
 string MassDawgNode::hash(){
-    string hashable = "";
-
-    // if we dont have any edges, return ""
-    if (this->edges.size() == 0) return "";
-
-
-    // go throught the egdes and add them to a list to sort such that all 
-    // nodes will hash the same if they are the same
-    double toSortMasses[this->edges.size() * 2];
-    for (int i = 0; i < this->edges.size(); i++){
-        toSortMasses[i] = this->edges[i]->singlyMass; 
-        toSortMasses[i+1] = this->edges[i]->doublyMass;
-    }
-    qsort(toSortMasses, this->edges.size(), sizeof(double), dblCmp);
-
-    // go through each of these values and add them to hashable
-    for (int i = 0; i < this->edges.size(); i ++){
-        hashable += to_string(toSortMasses[i]) + to_string(toSortMasses[i+1]);
-    }
-
-    return hashable;
+    return to_string(this->singlyMass) + '_' + to_string(this->doublyMass);
 }
 
 /**
@@ -83,14 +64,8 @@ void MassDawgNode::show(int spaces){
     cout << "|---> kmers: {";
     if (this->kmers.size() > 0) cout << this->kmers[0];
     for (int i = 1; i < this->kmers.size(); i ++) cout << ", " + this->kmers[i];
-    cout << "}\n";
+    cout << "} \t masses: " + to_string(this->singlyMass) + ", " + to_string(this->doublyMass) + "\n";
 
-    // print the edges
-    for (int j = 0; j < this->edges.size(); j ++){
-        for (int i = 0; i < spaces + 2; i ++) cout << " ";
-        cout << "edge masses: " + to_string(this->edges[j]->singlyMass) + ", " + to_string(this->edges[j]->doublyMass) + "\n";
-        // print the child of the edge
-        this->edges[j]->child->show(spaces + 4);
-    }
-    
+    // show each child
+    for (int i = 0; i < this->children.size(); i++) this->children[i]->show(spaces+2);
 }

@@ -9,7 +9,6 @@
 #include <iostream>
 
 #include "MassDawgNode.hpp"
-#include "Edge.hpp"
 
 using namespace std;
 
@@ -17,7 +16,6 @@ class UncheckedNode {
 public:
     MassDawgNode * parent;
     MassDawgNode * child;
-    Edge * connector;
 
     UncheckedNode(){}
 
@@ -56,6 +54,12 @@ public:
      * @param kmer              string          the sequence of amino acids associated with this mass
     */
     void insert(vector<double> singlySequence, vector<double> doublySequence, string kmer);
+
+    /**
+     * Any remaining unchecked nodes will be checked for merging to 
+     * complete the dawg. 
+    */
+    void finish();
 
 private:
 

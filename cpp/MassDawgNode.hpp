@@ -4,7 +4,6 @@
 #include <vector>
 #include <string>
 #include <iostream>
-#include "Edge.hpp"
 
 using namespace std;
 
@@ -13,13 +12,16 @@ public:
     // kmer values associated with incoming mass values
     vector<string> kmers;
     // outgoing mass edges
-    vector<Edge *> edges;
+    vector<MassDawgNode *> children;
+    // the sinlgy and doubly mass of this node
+    double singlyMass;
+    double doublyMass;
 
     // empty constructor
     MassDawgNode ();
 
-    // init with a string
-    MassDawgNode (string kmer);
+    // init with masses and a string
+    MassDawgNode (double singlyMass, double doublyMass, string kmer);
 
     ~MassDawgNode();
 
@@ -37,9 +39,9 @@ public:
      * @param doublyMass    double  doubly charged mass to connect nodes
      * @param kmer          string  the string to associate with the new kmer
      * 
-     * @return Edge *       edge connecting the parent to the new child
+     * @return MassDawgNode *   the new child added
     */
-    Edge * addChild(double singlyMass, double doublyMass, string kmer);
+    MassDawgNode * addChild(double singlyMass, double doublyMass, string kmer);
 
     /**
      * Turn the node's value into a large string in order to make 
