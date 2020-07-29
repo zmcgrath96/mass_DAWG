@@ -14,14 +14,14 @@ public:
     // outgoing mass edges
     vector<MassDawgNode *> children;
     // the sinlgy and doubly mass of this node
-    double singlyMass;
-    double doublyMass;
+    float singlyMass;
+    float doublyMass;
 
     // empty constructor
     MassDawgNode ();
 
     // init with masses and a string
-    MassDawgNode (double singlyMass, double doublyMass, string kmer);
+    MassDawgNode (float singlyMass, float doublyMass, string kmer);
 
     ~MassDawgNode();
 
@@ -35,13 +35,13 @@ public:
     /**
      * Add a child node to the node called on by creating a connecting edge
      * 
-     * @param singlyMass    double  singly charged mass to connect nodes
-     * @param doublyMass    double  doubly charged mass to connect nodes
+     * @param singlyMass    float  singly charged mass to connect nodes
+     * @param doublyMass    float  doubly charged mass to connect nodes
      * @param kmer          string  the string to associate with the new kmer
      * 
      * @return MassDawgNode *   the new child added
     */
-    MassDawgNode * addChild(double singlyMass, double doublyMass, string kmer);
+    MassDawgNode * addChild(float singlyMass, float doublyMass, string kmer);
 
     /**
      * Turn the node's value into a large string in order to make 

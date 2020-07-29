@@ -11,8 +11,8 @@ int main(){
     MassDawg * md = new MassDawg();
 
     // add a sequence
-    vector<double> singly {100.1, 200.2, 300.3};
-    vector<double> doubly {200.2, 400.4, 600.6};
+    vector<float> singly {100.1, 200.2, 300.3};
+    vector<float> doubly {200.2, 400.4, 600.6};
     string sequence = "ABC";
 
     // insert this sequcne
@@ -44,7 +44,7 @@ int main(){
     md->show();
 
     cout << "searching for a sequence with no gaps\n";
-    vector<double> searching = {100.1, 400.4, 600.6, 800.8};
+    vector<float> searching = {100.1, 400.4, 600.6, 800.8};
     vector<string> results = md->fuzzySearch(searching, 0, 10);
     cout << "Number of results: " + to_string(results.size()) + "\n";
 

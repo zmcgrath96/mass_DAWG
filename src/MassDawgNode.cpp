@@ -5,7 +5,7 @@
 MassDawgNode::MassDawgNode (){}
 
 // init with a string
-MassDawgNode::MassDawgNode (double singlyMass, double doublyMass, string kmer){
+MassDawgNode::MassDawgNode (float singlyMass, float doublyMass, string kmer){
         this->kmers.push_back(kmer);
         this->singlyMass = singlyMass;
         this->doublyMass = doublyMass;
@@ -29,13 +29,13 @@ void MassDawgNode::addKmer (string kmer){
 /**
  * Add a child node to the node called on by creating a connecting edge
  * 
- * @param singlyMass    double  singly charged mass to connect nodes
- * @param doublyMass    double  doubly charged mass to connect nodes
+ * @param singlyMass    float  singly charged mass to connect nodes
+ * @param doublyMass    float  doubly charged mass to connect nodes
  * @param kmer          string  the string to associate with the new kmer
  * 
  * @return Edge *       edge connecting the parent to the new child
 */
-MassDawgNode * MassDawgNode::addChild(double singlyMass, double doublyMass, string kmer){
+MassDawgNode * MassDawgNode::addChild(float singlyMass, float doublyMass, string kmer){
     MassDawgNode * newChild = new MassDawgNode(singlyMass, doublyMass, kmer);
     this->children.push_back(newChild);
 

@@ -26,7 +26,7 @@ void MassDawg::show(){
  * @param doublySequence    vector<doubly>  the doubly charged sequence of masses
  * @param kmer              string          the sequence of amino acids associated with this mass
 */
-void MassDawg::insert(vector<double> singlySequence, vector<double> doublySequence, string kmer){
+void MassDawg::insert(vector<float> singlySequence, vector<float> doublySequence, string kmer){
     // if the new one is not greater than the last one, we need to throw
     if (!this->previousIsLessThan(singlySequence, doublySequence)) {
         cout << "Error: sequences must be inserted in lowest to highest order";
@@ -108,13 +108,13 @@ void MassDawg::finish(){
  * Search for the input sequence while allowing for up to gapAllowances
  * before the search returns however deep it is in the graph
  * 
- * @param sequence      vector<double>  the sequence to search 
+ * @param sequence      vector<float>  the sequence to search 
  * @param gapAllowance  int             The number of gaps to allow in the search
  * @param ppmTol        int             the tolerance in parts per million to accept when searching
  * 
  * @return vector<string>               All kmers that we found in the search
 */
-vector<string> MassDawg::fuzzySearch(vector<double> sequence, int gapAllowance, int ppmTol){
+vector<string> MassDawg::fuzzySearch(vector<float> sequence, int gapAllowance, int ppmTol){
     // save all results from all children into a vector
     vector<vector<string>> allResults;
     for (int i = 0; i < this->root->children.size(); i ++) 
@@ -198,12 +198,12 @@ void MassDawg::minimize(int downTo){
 /**
  * Checks to see if the new sequences are greater than the old previous sequence
  * 
- * @param singlySequence    vector<double>  the new sequence of singly charged masses
- * @param doublySequence    vector<double>  the new sequence of doubly charged masses
+ * @param singlySequence    vector<float>  the new sequence of singly charged masses
+ * @param doublySequence    vector<float>  the new sequence of doubly charged masses
  * 
  * @return bool     True if the new sequences are greater than the prvious, False otherwise
 */
-bool MassDawg::previousIsLessThan(vector<double> singlySequence, vector<double> doublySequence){
+bool MassDawg::previousIsLessThan(vector<float> singlySequence, vector<float> doublySequence){
     // get the lengths of each and determine the shorter one
     int newLength = singlySequence.size();
     int oldLength = this->ps.singlySequence.size();
@@ -228,14 +228,14 @@ bool MassDawg::previousIsLessThan(vector<double> singlySequence, vector<double> 
  * Recursive search of the graph allowing for gapAllowance missed masses in the
  * search before returning whatever is found at the level
  * 
- * @param sequence      vector<double>  The sequence to use to navigate the graph
+ * @param sequence      vector<float>  The sequence to use to navigate the graph
  * @param currentNode   MassDawgNode *  The current node to investigate
  * @param currentGap    int             The number of gaps we have allowed up until this point
  * @param gapAllowance  int             The total number of gaps to allow
  * 
  * @return vector<string>   The kmers associated with the deepest part of the branch investigated
 */
-vector<string> MassDawg::fuzzySearchRec(vector<double> sequence, MassDawgNode * currentNode, int currentGap, int gapAllowance, int ppmTol){
+vector<string> MassDawg::fuzzySearchRec(vector<float> sequence, MassDawgNode * currentNode, int currentGap, int gapAllowance, int ppmTol){
     // for the cases when we return nothing
     vector<string> emptyResult = {""};
 
@@ -247,14 +247,14 @@ vector<string> MassDawg::fuzzySearchRec(vector<double> sequence, MassDawgNode * 
 
     // check to see if any of the values in the sequence are within
     // the range of the singly and doubly masses within this node
-    double singlyDaTol = ppmToDa(currentNode->singlyMass, ppmTol);
-    double doublyDaTol = ppmToDa(currentNode->doublyMass, ppmTol);
+    float singlyDaTol = ppmToDa(currentNode->singlyMass, ppmTol);
+    float doublyDaTol = ppmToDa(currentNode->doublyMass, ppmTol);
 
     // calcuate the bounds
-    double singlyLowerBound = currentNode->singlyMass - singlyDaTol;
-    double singlyUpperBound = currentNode->singlyMass + singlyDaTol;
-    double doublyLowerBound = currentNode->doublyMass - doublyDaTol;
-    double doublyUpperBound = currentNode->doublyMass + doublyDaTol;
+    float singlyLowerBound = currentNode->singlyMass - singlyDaTol;
+    float singlyUpperBound = currentNode->singlyMass + singlyDaTol;
+    float doublyLowerBound = currentNode->doublyMass - doublyDaTol;
+    float doublyUpperBound = currentNode->doublyMass + doublyDaTol;
 
     bool massFound = false;
     // go through each mass in the sequence and see if any of the values are in 
@@ -271,7 +271,7 @@ vector<string> MassDawg::fuzzySearchRec(vector<double> sequence, MassDawgNode * 
     int gapAddition = massFound ? 0 : 1;
 
     // updated vector. Won't change if mass wasnt found
-    vector<double> updatedSequence;
+    vector<float> updatedSequence;
 
     // if we found the mass, update sequence to not contain
     // any of the masses < our singly lower bound and any masses in our doubly range
