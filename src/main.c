@@ -36,6 +36,20 @@ int main(){
     printf("");
     showDawg(md);
 
+    // test the ppm to da
+    double x = ppmToDal(100.1, 10);
+
+    double searching[4] = {100.1, 201.21, 302.32, 400.4};
+    char ** results = fuzzySearch(md, searching, 4, 0, 20);
+    int i = 0;
+    printf("Results: ");
+    while (1){
+        if (isEOSA(results[i])) break;
+        printf("%s, ", results[i]);
+        i++;
+    }
+
     // clean up and remove the dawg
-    deleteMassDawg(md);
+    //deleteMassDawg(md);
+    return 0;
 }

@@ -345,6 +345,149 @@ void insert(MassDawg * md, double * singlySequence, double * doublySequence, cha
     md->previousSequence = nextPreviousSequence;
 }
 
+/**
+ * Recursively search all child nodes for the input sequence
+ * allowing for up to gapLimit missed matches
+ * 
+ * @param mdn           MassDawgNode *  the current node in our search through the graph
+ * @param sequence      double *        the double array we are searching
+ * @param sequenceLen
+ * @param currentGap    int             the current number of missed sequences in our search
+ * @param gapLimit      int             the limit on the number of allowed misses in the search
+ * @param ppmTol        int             the tolerance to allow when searching for matches
+ * 
+ * @return char **                      the list of kmers that exist at the node at the end of the search
+*/
+char ** __fuzzySearchRec(MassDawgNode * mdn, double * sequence, int sequenceLength, int currentGap, int gapLimit, int ppmTol){
+    // place holder for cases when we need to return nothing
+    char ** emptyList = NULL;
+
+    // if we've hit our gap limit, return an empty list
+    if (gapLimit - currentGap < 0) return emptyList;
+
+    // keep track of edges that fit our criteria
+    struct Edge ** edgesWithMass = NULL;
+    int * edgesWithMassIndices = NULL;
+    int numEdges = 0;
+
+    // the return value
+    char ** returnKmers = NULL;
+    
+    // get all edges that have a mass within our tolerance 
+    for (int i = 0; i < sequenceLength; i ++){
+        double mass = sequence[i];
+        double daTol = ppmToDal(mass, ppmTol);
+        double lowerBound = mass - daTol;
+        double upperBound = mass + daTol;
+
+        for (int j = 0; j < mdn->numEdges; j++){
+            // see if either of the masses (either singly or doubly) are within our bounds
+            if ((mdn->edges[j]->singlyMass >= lowerBound && mdn->edges[j]->singlyMass <= upperBound) 
+            || (mdn->edges[j]->doublyMass >= lowerBound && mdn->edges[j]->doublyMass <= upperBound)){
+                // if we haven't allocated memory for edges with mass, do so
+                if (edgesWithMass == NULL) {
+                    edgesWithMass = malloc(sizeof(struct Edge *));
+                    edgesWithMassIndices = malloc(sizeof(int));
+                }
+                else {
+                    edgesWithMass = realloc(edgesWithMass, sizeof(struct Edge *) * (numEdges + 1));
+                    edgesWithMassIndices = realloc(edgesWithMassIndices, sizeof(int) * (numEdges + 1));
+                }
+
+                edgesWithMass[numEdges] = mdn->edges[j];
+                edgesWithMassIndices[numEdges] = j;
+                numEdges ++;
+            }
+        }
+        
+    }
+
+    // if we found any edges that met the criteria, go through those and call 
+    // fuzzySearchRec again with no increase in the current gap
+    if (numEdges > 0){
+
+        // iterate through each edge
+        for (int i = 0; i < numEdges; i++){
+
+            // create a new sequence double * that has elements > than the singly mass
+            // of the edge and does not contain the doubly mass
+            double * newSequence = NULL;
+            int newSequenceLength = 0;
+            for (int j = 0; j < sequenceLength; j ++){
+                // values for checking to see if we should skip this mass
+                double edgeSinglyMassUpperBound = edgesWithMass[i]->singlyMass + ppmToDal(edgesWithMass[i]->singlyMass, ppmTol);
+                double edgeDoublyMassUpperBound = edgesWithMass[i]->doublyMass + ppmToDal(edgesWithMass[i]->doublyMass, ppmTol);
+                double edgeDoublyMassLowerBound = edgesWithMass[i]->doublyMass - ppmToDal(edgesWithMass[i]->doublyMass, ppmTol);
+                
+                // if the value of sequence at j is <= the singly mass upper bound OR
+                // its in the range of the doubly mass, don't add it
+                if (edgeSinglyMassUpperBound >= sequence[j]
+                || (sequence[j] >= edgeDoublyMassLowerBound && sequence[j] <= edgeDoublyMassUpperBound)){
+                    continue;
+                }
+
+                // if new sequence is still null, allocate it, otherwise reallocate it
+                if (newSequence == NULL) newSequence = malloc(sizeof(double));
+                else newSequence = realloc(newSequence, sizeof(double) * (newSequenceLength + 1));
+                
+                newSequence[newSequenceLength] = sequence[j];
+                newSequenceLength ++;
+            }
+
+            // get the new return value of the next level recursion
+            char ** nextRecursionLevelReturn = __fuzzySearchRec(
+                edgesWithMass[i]->child, 
+                newSequence, 
+                newSequenceLength,
+                currentGap, 
+                gapLimit, 
+                ppmTol
+            );
+
+            // if return kmers is NULL, point it to the next level recursion and continue
+            returnKmers = concatStrArrays(returnKmers, nextRecursionLevelReturn);
+        }
+    }
+
+    // for those edges that we did not find a mass, recurse another level with incremented gap
+    for (int i = 0; i < mdn->numEdges; i++){
+        // check to see if i is in the list of edges that were found to have the correct mass
+        int iInEdgeFound = 0;
+        for (int j = 0; j < numEdges; j++){
+            if (i == edgesWithMassIndices[j]){
+                iInEdgeFound = 1;
+                break;
+            }
+        }
+        if (iInEdgeFound == 1) continue;
+
+        // get the next level recursion return value
+        char ** nextRecursionLevelReturn = __fuzzySearchRec(
+            mdn->edges[i]->child, 
+            sequence, 
+            sequenceLength,
+            currentGap + 1, 
+            gapLimit, 
+            ppmTol
+        );
+
+        // concat the two lists
+        returnKmers = concatStrArrays(returnKmers, nextRecursionLevelReturn);
+    }
+
+    //if return masses is empty but at this depth we found something, return the value of the
+    //child of the edges that was found
+    if (returnKmers == NULL){
+        // go through all edges that had something and append to list
+        for (int i = 0; i < mdn->numEdges; i ++){
+            char ** kmersCopy = deepCopyStrArray(mdn->edges[i]->child->kmers);
+            returnKmers = concatStrArrays(returnKmers, kmersCopy);
+        }
+    }
+
+    return returnKmers;
+}
+
 
 /**
  * Use a sequence as a guide through the graph. Up to gap
@@ -358,13 +501,16 @@ void insert(MassDawg * md, double * singlySequence, double * doublySequence, cha
  *      if gap is 0 or 1, the return will be AB
  *      if gap is 2 +, output will be ABCDE ABXYZ
  * 
+ * @param md        MassDawg *  the graph to search
  * @param sequence  double *    list of doubles to use to traverse
  * @param gap       int         the number of missing links to allow
- * @param ppm_tol   int         the tolerance to allow when searching for matches
+ * @param ppmTol    int         the tolerance to allow when searching for matches
  * 
  * @return char **              list of kmers that match the input sequence
 */
-
+char ** fuzzySearch(MassDawg * md, double * sequence, int sequenceLength, int gap, int ppmTol){
+    return __fuzzySearchRec(md->root, sequence, sequenceLength, 0, gap, ppmTol);
+}
 
 /**
  * Complete the DAWG by minimizing all unchecked nodes that remain. 

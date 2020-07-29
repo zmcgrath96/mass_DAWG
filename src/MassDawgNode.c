@@ -30,7 +30,8 @@ MassDawgNode * initMassDawgNode() {
     mdn->numKmers = 0;
 
     mdn->edges = NULL;
-    mdn->kmers = NULL;
+    mdn->kmers = malloc(sizeof(char *));
+    mdn->kmers[0] = EOSA;
     return mdn;
 }
 
@@ -163,11 +164,12 @@ void addKmer(MassDawgNode * mdn, char * kmer){
 
     // otherwise create new room for this kmer and add it to the list
     //reallocate the memory for kmers to add a new one
-    mdn->kmers = realloc(mdn->kmers, sizeof(char *) * (mdn->numKmers +1));
+    mdn->kmers = realloc(mdn->kmers, sizeof(char *) * (mdn->numKmers +  2));
     char * addingKmer = malloc(sizeof(char) * (strlen(kmer) + 1));
     strcpy(addingKmer, kmer);
     addingKmer[strlen(kmer)] = '\0';
     mdn->kmers[mdn->numKmers] = addingKmer;
+    mdn->kmers[mdn->numKmers + 1] = EOSA;
     mdn->numKmers ++;
 }
 
