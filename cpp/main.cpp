@@ -42,4 +42,14 @@ int main(){
     md->finish();
 
     md->show();
+
+    cout << "searching for a sequence with no gaps\n";
+    vector<double> searching = {100.1, 400.4, 600.6, 800.8};
+    vector<string> results = md->fuzzySearch(searching, 0, 10);
+    cout << "Number of results: " + to_string(results.size()) + "\n";
+
+    for (int i = 0; i < results.size(); i++){
+        cout << results[i] + "\n"; 
+    }
+
 }

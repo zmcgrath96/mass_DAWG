@@ -1,5 +1,7 @@
 #include "MassDawg.hpp"
 
+/*******************Public methods*******************/
+
 // empty constructor takes no values
 MassDawg::MassDawg(){
     this->root = new MassDawgNode();
@@ -94,13 +96,48 @@ void MassDawg::insert(vector<double> singlySequence, vector<double> doublySequen
     this->ps = nextPreviousSequence;
 }
 
-    /**
-     * Any remaining unchecked nodes will be checked for merging to 
-     * complete the dawg. 
-    */
-    void MassDawg::finish(){
-        this->minimize(0);
+/**
+ * Any remaining unchecked nodes will be checked for merging to 
+ * complete the dawg. 
+*/
+void MassDawg::finish(){
+    this->minimize(0);
+}
+
+/**
+ * Search for the input sequence while allowing for up to gapAllowances
+ * before the search returns however deep it is in the graph
+ * 
+ * @param sequence      vector<double>  the sequence to search 
+ * @param gapAllowance  int             The number of gaps to allow in the search
+ * @param ppmTol        int             the tolerance in parts per million to accept when searching
+ * 
+ * @return vector<string>               All kmers that we found in the search
+*/
+vector<string> MassDawg::fuzzySearch(vector<double> sequence, int gapAllowance, int ppmTol){
+    // save all results from all children into a vector
+    vector<vector<string>> allResults;
+    for (int i = 0; i < this->root->children.size(); i ++) 
+        allResults.push_back(this->fuzzySearchRec(sequence, this->root->children[i], 0, gapAllowance, ppmTol));
+
+    // combine them all into one vector
+    vector<string> mergedResults;
+    for (int i = 0; i < allResults.size(); i++){
+        for (int j = 0; j < allResults[i].size(); j++){
+            if (allResults[i][j].empty()) continue;
+            mergedResults.push_back(allResults[i][j]);
+        } 
     }
+
+    return mergedResults;
+
+}
+
+
+
+/*******************Private methods*******************/
+
+
 
 /**
  * What makes this a graph and not a tree. Combines nodes that share edges and values
@@ -184,5 +221,101 @@ bool MassDawg::previousIsLessThan(vector<double> singlySequence, vector<double> 
     }
 
     return newLength >= oldLength;
+}
+
+
+/**
+ * Recursive search of the graph allowing for gapAllowance missed masses in the
+ * search before returning whatever is found at the level
+ * 
+ * @param sequence      vector<double>  The sequence to use to navigate the graph
+ * @param currentNode   MassDawgNode *  The current node to investigate
+ * @param currentGap    int             The number of gaps we have allowed up until this point
+ * @param gapAllowance  int             The total number of gaps to allow
+ * 
+ * @return vector<string>   The kmers associated with the deepest part of the branch investigated
+*/
+vector<string> MassDawg::fuzzySearchRec(vector<double> sequence, MassDawgNode * currentNode, int currentGap, int gapAllowance, int ppmTol){
+    // for the cases when we return nothing
+    vector<string> emptyResult = {""};
+
+    // BASE CASE: we're past our limit
+    if ((gapAllowance - currentGap) < 0) return emptyResult;
+
+    // BASE CASE: we're given an empty sequence
+    if (sequence.empty()) return emptyResult;
+
+    // check to see if any of the values in the sequence are within
+    // the range of the singly and doubly masses within this node
+    double singlyDaTol = ppmToDa(currentNode->singlyMass, ppmTol);
+    double doublyDaTol = ppmToDa(currentNode->doublyMass, ppmTol);
+
+    // calcuate the bounds
+    double singlyLowerBound = currentNode->singlyMass - singlyDaTol;
+    double singlyUpperBound = currentNode->singlyMass + singlyDaTol;
+    double doublyLowerBound = currentNode->doublyMass - doublyDaTol;
+    double doublyUpperBound = currentNode->doublyMass + doublyDaTol;
+
+    bool massFound = false;
+    // go through each mass in the sequence and see if any of the values are in 
+    // either set of bounds
+    for (int i = 0; i < sequence.size(); i++){
+        if ((singlyLowerBound <= sequence[i] && sequence[i] <= singlyUpperBound) 
+        || (doublyLowerBound <= sequence[i] && sequence[i] <= doublyUpperBound)){
+            massFound = true;
+            break;
+        }
+    }
+
+    // add to the gap if we didnt find the mass
+    int gapAddition = massFound ? 0 : 1;
+
+    // updated vector. Won't change if mass wasnt found
+    vector<double> updatedSequence;
+
+    // if we found the mass, update sequence to not contain
+    // any of the masses < our singly lower bound and any masses in our doubly range
+    if (massFound) {
+        for (int i = 0; i < sequence.size(); i ++){
+            if ((doublyLowerBound <= sequence[i] && sequence[i] <= doublyUpperBound)
+             || sequence[i] <= singlyLowerBound){
+                 continue;
+            }
+
+            //otherwise keep it
+            updatedSequence.push_back(sequence[i]);
+        }
+    }
+    else updatedSequence = sequence;
+
+    // if our updated sequence is EMPTY but we found the mass, return my kmers
+    if (updatedSequence.empty() and massFound) return vector<string>(currentNode->kmers);
+
+    // otherwise go through all of the children and save their results
+    vector<vector<string>> childrensResults;
+    for (int i = 0; i < currentNode->children.size(); i++){
+        childrensResults.push_back(this->fuzzySearchRec(
+            updatedSequence, 
+            currentNode->children[i], 
+            currentGap + gapAddition, 
+            gapAllowance, 
+            ppmTol
+        ));
+    }
+
+    // combine all the children's return values into one vector
+    vector<string> results;
+    for (int i = 0; i < childrensResults.size(); i++){
+        for (int j = 0; j < childrensResults[i].size(); j++){
+            if (childrensResults[i][j].empty()) continue;
+            results.push_back(childrensResults[i][j]);
+        }
+    }
+
+    // if we don't have any results and we found a mass, return my results
+    if (results.empty() and massFound) return vector<string>(currentNode->kmers);
+
+    // otherwise return results
+    return results.empty() ? emptyResult : results;
 }
 

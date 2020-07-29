@@ -9,6 +9,7 @@
 #include <iostream>
 
 #include "MassDawgNode.hpp"
+#include "utils.hpp"
 
 using namespace std;
 
@@ -49,11 +50,23 @@ public:
    /**
      * Add a new singly and doubly charged sequence associated with the kmer to the graph
      * 
-     * @param singlySequence    vector<doubly>  the singly charged sequence of masses
-     * @param doublySequence    vector<doubly>  the doubly charged sequence of masses
+     * @param singlySequence    vector<double>  the singly charged sequence of masses
+     * @param doublySequence    vector<double>  the doubly charged sequence of masses
      * @param kmer              string          the sequence of amino acids associated with this mass
     */
     void insert(vector<double> singlySequence, vector<double> doublySequence, string kmer);
+
+    /**
+     * Search for the input sequence while allowing for up to gapAllowances
+     * before the search returns however deep it is in the graph
+     * 
+     * @param sequence      vector<double>  the sequence to search 
+     * @param gapAllowance  int             The number of gaps to allow in the search
+     * @param ppmTol        int             the tolerance in parts per million to accept when searching
+     * 
+     * @return vector<string>               All kmers that we found in the search
+    */
+   vector<string> fuzzySearch(vector<double> sequence, int gapAllowance, int ppmTol);
 
     /**
      * Any remaining unchecked nodes will be checked for merging to 
@@ -84,6 +97,20 @@ private:
      * @return bool     True if the new sequences are greater than the prvious, False otherwise
     */
     bool previousIsLessThan(vector<double> singlySequence, vector<double> doublySequence);
+
+    /**
+     * Recursive search of the graph allowing for gapAllowance missed masses in the
+     * search before returning whatever is found at the level
+     * 
+     * @param sequence      vector<double>  The sequence to use to navigate the graph
+     * @param currentNode   MassDawgNode *  The current node to investigate
+     * @param currentGap    int             The number of gaps we have allowed up until this point
+     * @param gapAllowance  int             The total number of gaps to allow
+     * @param ppmTol        int             the tolerance in parts per million to accept when searching
+     * 
+     * @return vector<string>   The kmers associated with the deepest part of the branch investigated
+    */
+    vector<string> fuzzySearchRec(vector<double> sequence, MassDawgNode * currentNode, int currentGap, int gapAllowance, int ppmTol);
 
 };
 #endif
