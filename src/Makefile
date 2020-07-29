@@ -1,13 +1,23 @@
-CC=gcc
-CFLAGS=-I.
-DEPS = 
-OBJ = main.o 
+# Variables 
+CC = g++
+CFLAGS = -Wall -g -std=c++11
 
-%.o: %.c $(DEPS)
-	$(CC) -c -o $@ $< $(CFLAGS)
+# Executable
+main: main.o MassDawg.o MassDawgNode.o  
+	$(CC) $(CFLAGS) -o main main.o MassDawg.o MassDawgNode.o 
 
-main: $(OBJ)
-	$(CC) -o $@ $^ $(CFLAGS)
+# Object files
+main.o: main.cpp MassDawg.hpp
+	$(CC) $(CFLAGS) -c main.cpp
+
+MassDawg.o: MassDawg.hpp MassDawgNode.hpp utils.hpp
+	$(CC) $(CFLAGS) -c MassDawg.cpp 
+
+MassDawgNode.o: MassDawgNode.hpp 
+	$(CC) $(CFLAGS) -c MassDawgNode.cpp
+
+utils.o: utils.hpp
+	$(CC) $(CFLAGS) -c utils.cpp
 
 clean:
-	rm -r *.o
+	rm main *.o
