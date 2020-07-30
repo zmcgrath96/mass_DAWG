@@ -11,7 +11,20 @@ MassDawgNode::MassDawgNode (float singlyMass, float doublyMass, string kmer){
         this->doublyMass = doublyMass;
     }
 
-MassDawgNode::~MassDawgNode(){}
+// it is assumed all nodes are deleted INDEPENDENTLY of eachother, 
+// nodes are not recursively deleted, so all pointer are set to null
+// and that is all
+MassDawgNode::~MassDawgNode(){
+    try{
+        for (MassDawgNode * i: this->children){
+        i = nullptr;
+    }
+    }
+    catch (exception) {
+        cout << "\nERROR WHEN SETTING POINTERS TO NULL\n";
+    }
+    
+}
 
 /**
  * Add a kmer to the set of kmers. No duplicates will be made

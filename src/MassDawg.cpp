@@ -29,8 +29,7 @@ void MassDawg::show(){
 void MassDawg::insert(vector<float> singlySequence, vector<float> doublySequence, string kmer){
     // if the new one is not greater than the last one, we need to throw
     if (!this->previousIsLessThan(singlySequence, doublySequence)) {
-        cout << "Error: sequences must be inserted in lowest to highest order";
-        throw;
+        throw "Error: sequences must be inserted in lowest to highest order";
     }
 
     // find the common prefix between the new sequence and the last sequence (mass based)
@@ -187,7 +186,12 @@ void MassDawg::minimize(int downTo){
             }
             
             // delete child
-            delete child;
+            try {
+                delete child;
+            }
+            catch (exception){
+                cout << "Error when deleting child in MassDawg";
+            }
         }
 
         // remove the one we just finished working on

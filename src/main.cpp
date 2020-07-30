@@ -52,4 +52,14 @@ int main(){
         cout << results[i] + "\n"; 
     }
 
+    cout << "\nsearching for a sequence with gaps\n";
+    searching = {300.3, 800.8};
+    results = md->fuzzySearch(searching, 2, 10);
+    cout << "Number of results: " + to_string(results.size()) + "\n";
+
+    for (string i: results){
+        cout << i + "\n";
+    }
+
+    delete md;
 }
