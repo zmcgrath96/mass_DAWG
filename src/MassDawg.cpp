@@ -278,11 +278,11 @@ vector<string> MassDawg::fuzzySearchRec(vector<float> sequence, MassDawgNode * c
     vector<float> updatedSequence;
 
     // if we found the mass, update sequence to not contain
-    // any of the masses < our singly lower bound and any masses in our doubly range
+    // any of the masses < our doubly lower bound and any masses in our singly range
     if (massFound) {
         for (int i = 0; i < sequence.size(); i ++){
-            if ((doublyLowerBound <= sequence[i] && sequence[i] <= doublyUpperBound)
-             || sequence[i] <= singlyLowerBound){
+            if ((singlyLowerBound <= sequence[i] && sequence[i] <= singlyUpperBound)
+             || sequence[i] <= doublyLowerBound){
                  continue;
             }
 
