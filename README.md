@@ -1,4 +1,4 @@
-# Mass Directed Acyclic Word Graph (DAWG)
+# Mass Directed Acyclic Word Graph (DAWG) ![build and test](https://github.com/zmcgrath96/mass_DAWG/workflows/build%20and%20test/badge.svg?event=push)
 A word graph made for the sole purpose of identify mass spectra data
 
 ## Background
