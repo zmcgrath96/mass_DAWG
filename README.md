@@ -121,6 +121,9 @@ To just build and NOT run tests, follow those steps but do so for the file `buil
 
 To include in your workflow, simply import `MassDawg.hpp` in your file.
 
+### Special Usage instructions
+While online algorithms exist for unsorted input data into a DAWG with successful compression, this is not one. This DAWG is more traditional, and all input data MUST be sorted. If not, an error is thrown. The in order insertion allows for an easier compression of the branches into a graph.
+
 ### Example 
 
 Taken from the main.cpp file in the `src` directory
