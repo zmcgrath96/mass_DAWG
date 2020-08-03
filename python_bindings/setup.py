@@ -9,9 +9,10 @@ with open("README.md", "r") as fh:
 
 setup(
     name="mass_dawg",
-    version="1.0.0", 
+    version="1.0.1", 
     url="https://github.com/zmcgrath96/mass_DAWG",
     author="Zachary McGrath", 
+    author_email="zmcgrath96@gmail.com", 
     description="A datastructure for efficient storage of mass spectrometry data", 
     long_description=long_description,
     long_description_content_type="text/markdown",

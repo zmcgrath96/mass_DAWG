@@ -1,6 +1,4 @@
 #include "MassDawgNode.hpp"
-#include "utils.cpp"
-
 
 MassDawgNode::MassDawgNode (){}
 
@@ -33,7 +31,7 @@ MassDawgNode::~MassDawgNode(){
 */
 void MassDawgNode::addKmer (string kmer){
     // check to see if this kmer exists in the set. If not, add it
-    for (int i = 0; i < this->kmers.size(); i++){
+    for (int i = 0; i < (int)this->kmers.size(); i++){
         if (this->kmers[i].compare(kmer) == 0) return;
     }
     this->kmers.push_back(kmer);
@@ -76,9 +74,9 @@ void MassDawgNode::show(int spaces){
     // print kmers
     cout << "|---> kmers: {";
     if (this->kmers.size() > 0) cout << this->kmers[0];
-    for (int i = 1; i < this->kmers.size(); i ++) cout << ", " + this->kmers[i];
+    for (int i = 1; i < (int)this->kmers.size(); i ++) cout << ", " + this->kmers[i];
     cout << "} \t masses: " + to_string(this->singlyMass) + ", " + to_string(this->doublyMass) + "\n";
 
     // show each child
-    for (int i = 0; i < this->children.size(); i++) this->children[i]->show(spaces+2);
+    for (int i = 0; i < (int)this->children.size(); i++) this->children[i]->show(spaces+2);
 }

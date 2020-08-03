@@ -5,3 +5,4 @@ python_bindings/build
 python_bindings/dist
 python_bindings/mass_dawg*
 python_bindings/src
+py_test.py

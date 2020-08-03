@@ -9,7 +9,6 @@
 #include <iostream>
 
 #include "MassDawgNode.hpp"
-#include "utils.hpp"
 
 using namespace std;
 

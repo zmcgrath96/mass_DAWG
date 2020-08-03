@@ -1,4 +1,5 @@
 #include "MassDawg.hpp"
+#include "utils.hpp"
 
 /*******************Public methods*******************/
 
@@ -287,8 +288,8 @@ vector<string> MassDawg::fuzzySearchRec(vector<float> sequence, MassDawgNode * c
     // any of the masses < our doubly lower bound and any masses in our singly range
     if (massFound) {
         for (int i = 0; i < (int)sequence.size(); i ++){
-            if ((singlyLowerBound <= sequence[i] && sequence[i] <= singlyUpperBound)
-             || sequence[i] <= doublyLowerBound){
+            if ((singlyLowerBound <= sequence[i] && sequence[i] <= singlyUpperBound) 
+            || (doublyLowerBound <= sequence[i] && sequence[i] <= doublyUpperBound)){
                  continue;
             }
 

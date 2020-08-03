@@ -1,7 +1,7 @@
 from libcpp.vector cimport vector
 from libcpp.string cimport string
 
-cdef extern from "../src/MassDawgc.hpp":
+cdef extern from "../src/MassDawg.hpp":
     cdef cppclass MassDawg: 
         MassDawg() except +
         void show()

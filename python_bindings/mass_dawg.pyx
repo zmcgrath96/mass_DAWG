@@ -1,5 +1,5 @@
 # distutils: language = c++
-# distutils: sources = ../src/MassDawgc.cpp
+# distutils: sources = ../src/MassDawg.cpp ../src/utils.cpp ../src/MassDawgNode.cpp
 
 from libcpp.string cimport string 
 from libcpp.vector cimport vector
@@ -37,7 +37,9 @@ cdef class PyMassDawg:
 
         cdef vector[string] results = self.m_dawg.fuzzySearch(search_seq_vec, gap_allowance, ppm_tol)
 
-        return list(set(results))
+        return list(set(
+            [result.decode() for result in results]
+        ))
 
     def finish(self):
         self.m_dawg.finish()
