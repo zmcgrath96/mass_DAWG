@@ -1,3 +1,6 @@
+#ifndef UTILS_H
+#define UTILS_H
+
 /**
  * Used for qsort on floats. If d1 < d2, a number < 0 returned
  * if d1 > d2, a number > 0 returned
@@ -14,3 +17,4 @@ int dblCmp(const void * d1, const void * d2);
  * @return float   the tolerance in daltons 
 */
 float ppmToDa(float mass, int ppmTol);
+#endif

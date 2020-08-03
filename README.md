@@ -214,3 +214,6 @@ AXYD
 * __void insert(vector<float> singlySequence, vector<float> doublySequence, string kmer)__: Insert a pair of singly charged and doubly charged masses into the dawg associated withthe kmer (all 3 parameters MUST be the same length)
 * __vector<string> fuzzySearch(vector<float> sequence, int gapAllowance, int ppmTol)__: Search the graph for a sequence of floats allowing for up to gapAllowance missed masses. ppmTol is the allowed tolerance for a mass to fall within (ppm = parts per million)
 * __void finish()__: Go through the graph one final time to merge all remaining nodes that have not been checked for duplicates.
+
+## Notes
+The files `MassDawgc.*` are aggregated versions of `MassDawg.*`, `MassDawgNode.*`, and `utils.*`. Those two files are used in creating the python bindings for this module.
