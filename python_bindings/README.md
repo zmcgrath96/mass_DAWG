@@ -106,8 +106,13 @@ Our graph is now connected, unlike a tree would have been (AXY would have become
 This module is written in C++ 11 for its speed and ease of use to write. Python bindings are what are presented in this package
 ### Installation and usage
 
-```
+#### Install package from PyPI
+```bash
 $> pip install mass_dawg
+```
+#### Install from source
+```bash
+$>git clone https://github.com/zmcgrath96/mass_DAWG.git
 ```
 
 ### Special Usage instructions
