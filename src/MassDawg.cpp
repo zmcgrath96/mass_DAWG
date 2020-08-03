@@ -115,7 +115,7 @@ void MassDawg::finish(){
 */
 vector<string> MassDawg::fuzzySearch(vector<float> sequence, int gapAllowance, int ppmTol){
     // save all results from all children into a vector
-    vector<vector<string>> allResults;
+    vector<vector<string> > allResults;
     for (int i = 0; i < this->root->children.size(); i ++) 
         allResults.push_back(this->fuzzySearchRec(sequence, this->root->children[i], 0, gapAllowance, ppmTol));
 
@@ -222,6 +222,12 @@ bool MassDawg::previousIsLessThan(vector<float> singlySequence, vector<float> do
         || (doublySequence[i] < this->ps.doublySequence[i])){
             return false;
         }
+
+        // if the new one is greater than the old one, return true
+        if ((singlySequence[i] > this->ps.singlySequence[i])
+        && (doublySequence[i] > this->ps.doublySequence[i])){
+            return true;
+        }
     }
 
     return newLength >= oldLength;
@@ -296,7 +302,7 @@ vector<string> MassDawg::fuzzySearchRec(vector<float> sequence, MassDawgNode * c
     if (updatedSequence.empty() and massFound) return vector<string>(currentNode->kmers);
 
     // otherwise go through all of the children and save their results
-    vector<vector<string>> childrensResults;
+    vector<vector<string> > childrensResults;
     for (int i = 0; i < currentNode->children.size(); i++){
         childrensResults.push_back(this->fuzzySearchRec(
             updatedSequence, 
@@ -317,7 +323,7 @@ vector<string> MassDawg::fuzzySearchRec(vector<float> sequence, MassDawgNode * c
     }
 
     // if we don't have any results and we found a mass, return my results
-    if (results.empty() and massFound) return vector<string>(currentNode->kmers);
+    if (results.empty() && massFound) return vector<string>(currentNode->kmers);
 
     // otherwise return results
     return results.empty() ? emptyResult : results;
