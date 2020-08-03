@@ -110,14 +110,14 @@ To install, run the following:
 $>git clone https://github.com/zmcgrath96/mass_DAWG.git
 ```
 
-To build and run tests, change to the `mass_DAWG` directory, compile the bash script `build_and_test.sh` then run `./build_and_test.sh`
+To build and run tests, change to the `mass_DAWG` directory, compile the bash script `build_and_test_cc.sh` then run `./build_and_test_cc.sh`
 ```bash
 $> cd mass_DAWG
 $mass_DAWG> chmod u+x build_and_test.sh
 $mass_DAWG> ./build_and_test.sh
 ```
 
-To just build and NOT run tests, follow those steps but do so for the file `build.sh` rather than `build_and_test.sh`
+To just build and NOT run tests, follow those steps but do so for the file `build_cc.sh` rather than `build_and_test_cc.sh`
 
 To include in your workflow, simply import `MassDawg.hpp` in your file.
 
