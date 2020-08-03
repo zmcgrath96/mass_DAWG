@@ -217,3 +217,6 @@ AXYD
 
 ## Notes
 The files `MassDawgc.*` are aggregated versions of `MassDawg.*`, `MassDawgNode.*`, and `utils.*`. Those two files are used in creating the python bindings for this module.
+
+## Python bindings
+More information on how to use the python version of this module can be found [here](https://github.com/zmcgrath96/mass_DAWG/tree/master/python_bindings)
