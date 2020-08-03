@@ -25,7 +25,7 @@ jobs:
     # Runs a set of commands using the runners shell
     - name: Build and test 
       run: |
-        chmod u+x build_and_test.sh
+        chmod u+x build_and_test_cc.sh
         echo Building and testing
-        ./build_and_test.sh
+        ./build_and_test_cc.sh
         echo Done
