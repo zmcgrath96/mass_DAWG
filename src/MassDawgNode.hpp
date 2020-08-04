@@ -4,6 +4,7 @@
 #include <vector>
 #include <string>
 #include <iostream>
+#include <cmath>
 
 using namespace std;
 
@@ -42,6 +43,17 @@ public:
      * @return MassDawgNode *   the new child added
     */
     MassDawgNode * addChild(float singlyMass, float doublyMass, string kmer);
+
+    /**
+     * Add a child. The child node exists, and we are merely adding the 
+     * pointer of the new child to the nodes internal list. The node's values
+     * is checked against all nodes in the list to ensure that a duplicate is not
+     * created
+     * 
+     * @param newChild      MassDawgNode *  pointer to the new node to add
+    */
+    void addChildByPointer(MassDawgNode * newChild);
+
 
     /**
      * Turn the node's value into a large string in order to make 

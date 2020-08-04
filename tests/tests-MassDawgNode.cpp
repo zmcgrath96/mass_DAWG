@@ -55,5 +55,28 @@ TEST_CASE("Mass Dawg Node test cases"){
 
     delete mdn;
     delete child;
+    mdn = new MassDawgNode(100.1, 200.2, "ABC");
+    child = new MassDawgNode(300.3, 400.4, "XYZ");
+    SECTION("Adding child by pointer does not throw an error and child can be found"){
+        REQUIRE_NOTHROW(mdn->addChildByPointer(child));
+        REQUIRE(mdn->children[0]->kmers[0] == "XYZ");
+    }
+
+    SECTION("Adding a child by pointer then trying to add it again will not add it the second time"){
+        REQUIRE_NOTHROW(mdn->addChildByPointer(child));
+        REQUIRE_NOTHROW(mdn->addChildByPointer(child));
+        REQUIRE(mdn->children.size() == 1);
+    }
+
+    SECTION("Adding a child by pointer then adding another one with masses within the delta of .001 will not add the second child"){
+        REQUIRE_NOTHROW(mdn->addChildByPointer(child));
+        
+        MassDawgNode * otherChild = new MassDawgNode(300.3001, 400.4001, "XYZ");
+        REQUIRE_NOTHROW(mdn->addChildByPointer(otherChild));
+        REQUIRE(mdn->children.size() == 1);
+    }
+
+    delete mdn;
+    delete child;
 
 }

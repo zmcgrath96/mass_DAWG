@@ -166,15 +166,21 @@ void MassDawg::minimize(int downTo){
             this->minimizedNodes.insert({childsHash, child});
         }
 
-        // Edge * in the current unchecked points to the child. we need to point
-        // this to the node in the map (map has a pointer, so just set edge->child to map return)
+        // Parent contains child in one of its children. we need to point
+        // this to the node in the map (map has a pointer, so just set parent[child]->child to map return)
         // and delete child. Add all the kmers of the child to the one in the map
         else {
             // get the pointer from the map
             MassDawgNode * minimizedNode = result->second;
+
             // set add all the kmers in the child to the node
-            for (int j = 0; j < (int)child->kmers.size(); j++){
-                minimizedNode->addKmer(child->kmers[j]);
+            for (string kmer: child->kmers){
+                minimizedNode->addKmer(kmer);
+            }
+           
+            // add all the children of the current child node to the minimized node
+            for (MassDawgNode * childsChild: child->children){
+                minimizedNode->addChildByPointer(childsChild);
             }
             
             // find the child of the parent that pointed to the node
@@ -281,7 +287,7 @@ vector<string> MassDawg::fuzzySearchRec(vector<float> sequence, MassDawgNode * c
     // add to the gap if we didnt find the mass
     int gapAddition = massFound ? 0 : 1;
 
-    // updated vector. Won't change if mass wasnt found
+    // updated vector. Won't change if mass wasn't found
     vector<float> updatedSequence;
 
     // if we found the mass, update sequence to not contain
@@ -290,7 +296,7 @@ vector<string> MassDawg::fuzzySearchRec(vector<float> sequence, MassDawgNode * c
         for (int i = 0; i < (int)sequence.size(); i ++){
             if ((singlyLowerBound <= sequence[i] && sequence[i] <= singlyUpperBound) 
             || (doublyLowerBound <= sequence[i] && sequence[i] <= doublyUpperBound)){
-                 continue;
+                continue;
             }
 
             //otherwise keep it

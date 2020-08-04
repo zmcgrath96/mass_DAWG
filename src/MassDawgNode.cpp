@@ -54,6 +54,27 @@ MassDawgNode * MassDawgNode::addChild(float singlyMass, float doublyMass, string
 }
 
 /**
+ * Add a child. The child node exists, and we are merely adding the 
+ * pointer of the new child to the nodes internal list. The node's values
+ * is checked against all nodes in the list to ensure that a duplicate is not
+ * created
+ * 
+ * @param newChild      MassDawgNode *  pointer to the new node to add
+*/
+void MassDawgNode::addChildByPointer(MassDawgNode * newChild){
+    float delta = .001;
+
+    for (MassDawgNode * child: this->children){
+        if (child == newChild || 
+        (abs(child->singlyMass - newChild->singlyMass) < delta 
+        && abs(child->doublyMass - newChild->doublyMass) < delta)){
+            return;
+        }
+    }
+    this->children.push_back(newChild);
+}
+
+/**
  * Turn the node's value into a large string in order to make 
  * it hashable
  * 
