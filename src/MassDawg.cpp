@@ -34,12 +34,47 @@ void MassDawg::show(){
  * @param kmer              string          the sequence of amino acids associated with this mass
 */
 void MassDawg::insert(vector<float> singlySequence, vector<float> doublySequence, string kmer){
-    // get the longest common prefix of this new sequence
-    LongestCommonPrefix lcp = this->longestCommonPrefix(singlySequence, doublySequence);
+    int commonPrefix = 0;
+    LongestCommonPrefix lcp;
 
-    // add this kmer to all of the nodes in the lcp
-    for (MassDawgNode * node: lcp.nodes) node->addKmer(kmer);
-    int commonPrefix = (int)lcp.singlySequence.size();
+    // if the new seqeunce is greater than the old sequence, use the this->previousSequence
+    // instance with its nodes for speed up in sorted input
+    if (this->previousIsLessThan(singlySequence, doublySequence)) {
+
+        // find the common prefix between the new sequence and the last sequence (mass based)	
+        int iterLength = MIN((int)singlySequence.size(), (int)this->ps.singlySequence.size());	
+
+        // go through and see how much these sequences have in common	
+        for (int i = 0; i < iterLength; i++){	
+            // if either of the singly or doubly sequences are not the same, break	
+            if ((singlySequence[i] != this->ps.singlySequence[i]) 	
+            || (doublySequence[i] != this->ps.doublySequence[i])) break;	
+
+            // update the kmer at the node at this position in the previous sequence
+            (*this->ps.nodes[i]).addKmer(kmer.substr(0, i + 1));
+
+            commonPrefix ++;	
+        }
+        
+        // at the break, make lcp the previous sequence
+        for (int i = 0; i < commonPrefix; i ++){
+            lcp.nodes.push_back(this->ps.nodes[i]);
+            lcp.singlySequence.push_back(singlySequence[i]);
+            lcp.doublySequence.push_back(doublySequence[i]);
+        }
+    }	
+
+    // otherise, in the case that the new sequence is smaller than previous (unsorted input)
+    // find the longest common prefix
+    else {
+        // get the longest common prefix of this new sequence
+        lcp = this->longestCommonPrefix(singlySequence, doublySequence);
+
+        // add this kmer to all of the nodes in the lcp
+        for (MassDawgNode * node: lcp.nodes) node->addKmer(kmer);
+        commonPrefix = (int)lcp.singlySequence.size();
+    }
+    
 
     // minimize the previous sequence
     this->minimize(commonPrefix);
@@ -58,6 +93,7 @@ void MassDawg::insert(vector<float> singlySequence, vector<float> doublySequence
     nextPreviousSequence.singlySequence = singlySequence; 
     nextPreviousSequence.doublySequence = doublySequence;
 
+    // copy over all of the overlapped nodes
     for (int i = 0; i < commonPrefix; i++){
         nextPreviousSequence.nodes.push_back(this->ps.nodes[i]);
     }
@@ -291,6 +327,40 @@ vector<string> MassDawg::fuzzySearchRec(vector<float> sequence, MassDawgNode * c
 
     // otherwise return results
     return results.empty() ? emptyResult : results;
+}
+
+/**	
+ * Checks to see if the new sequences are greater than the old previous sequence	
+ * 	
+ * @param singlySequence    vector<float>  the new sequence of singly charged masses	
+ * @param doublySequence    vector<float>  the new sequence of doubly charged masses	
+ * 	
+ * @return bool     True if the new sequences are greater than the prvious, False otherwise	
+*/	
+bool MassDawg::previousIsLessThan(vector<float> singlySequence, vector<float> doublySequence){	
+    // get the lengths of each and determine the shorter one	
+    int newLength = (int)singlySequence.size();	
+    int oldLength = (int)this->ps.singlySequence.size();	
+
+    int iterLength = MIN(newLength, oldLength);	
+
+    for (int i = 0; i < iterLength; i ++){	
+
+        // if the new one in either the singly OR doubly	
+        // is greater than the previous at i, retutn False	
+        if ((singlySequence[i] < this->ps.singlySequence[i])	
+        || (doublySequence[i] < this->ps.doublySequence[i])){	
+            return false;	
+        }	
+
+        // if the new one is greater than the old one, return true	
+        if ((singlySequence[i] > this->ps.singlySequence[i])	
+        && (doublySequence[i] > this->ps.doublySequence[i])){	
+            return true;	
+        }	
+    }	
+
+    return newLength >= oldLength;	
 }
 
 /**

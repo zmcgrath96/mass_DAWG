@@ -113,6 +113,16 @@ private:
     */
     vector<string> fuzzySearchRec(vector<float> sequence, MassDawgNode * currentNode, int currentGap, int gapAllowance, int ppmTol);
 
+    /**	
+     * Checks to see if the new sequences are greater than the old previous sequence	
+     * 	
+     * @param singlySequence    vector<float>  the new sequence of singly charged masses	
+     * @param doublySequence    vector<float>  the new sequence of doubly charged masses	
+     * 	
+     * @return bool     True if the new sequences are greater than the prvious, False otherwise	
+    */	
+    bool previousIsLessThan(vector<float> singlySequence, vector<float> doublySequence);
+
     /**
      * Find the longest common prefix of input sequences to a path in the tree. Used for out
      * of order insertions.
