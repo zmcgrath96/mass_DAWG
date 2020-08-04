@@ -115,8 +115,7 @@ $> pip install mass_dawg
 $>git clone https://github.com/zmcgrath96/mass_DAWG.git
 ```
 
-### Special Usage instructions
-While online algorithms exist for unsorted input data into a DAWG with successful compression, this is not one. This DAWG is more traditional, and all input data MUST be sorted. If not, an error is thrown. The in order insertion allows for an easier compression of the branches into a graph.
+__UPDATE__: As of August 4th 2020 (pip release `1.1.0`), sequences can be inserted out of order.
 
 ### Example 
 

@@ -9,7 +9,7 @@ with open("README.md", "r") as fh:
 
 setup(
     name="mass_dawg",
-    version="1.0.1", 
+    version="1.1.0", 
     url="https://github.com/zmcgrath96/mass_DAWG",
     author="Zachary McGrath", 
     author_email="zmcgrath96@gmail.com", 

@@ -42,7 +42,7 @@ TEST_CASE("Testing Mass Dawg"){
         REQUIRE_NOTHROW(md->insert(singlySearchSeq1, doublySearchSeq1, searchString1));
     }
 
-    SECTION("Two insertions in order into graph throws no error and both kmers can be found"){
+    SECTION("Two insertions into graph throws no error and both kmers can be found"){
         REQUIRE_NOTHROW(md->insert(singlySearchSeq1, doublySearchSeq1, searchString1));
         REQUIRE_NOTHROW(md->insert(singlySearchSeq2, doublySearchSeq2, searchString2));
 
@@ -50,9 +50,9 @@ TEST_CASE("Testing Mass Dawg"){
         REQUIRE(hasString(md->fuzzySearch(singlySearchSeq2, 0, 10), searchString2));
     }
 
-    SECTION("Two insertions out of order throws exception"){
+    SECTION("Two insertions out of order does not throw exception"){
         REQUIRE_NOTHROW(md->insert(singlySearchSeq2, doublySearchSeq2, searchString2));
-        REQUIRE_THROWS(md->insert(singlySearchSeq1, doublySearchSeq1, searchString1));
+        REQUIRE_NOTHROW(md->insert(singlySearchSeq1, doublySearchSeq1, searchString1));
     }
 
     SECTION("Two insertions with a common prefix and a search only until the common prefix returns both kmers"){
@@ -86,7 +86,7 @@ TEST_CASE("Testing Mass Dawg"){
         REQUIRE(hasString(results, searchString3));
     }
 
-    SECTION("Three insertions in order with two shared common suffixes and subsequent search returns those shared suffixes"){
+    SECTION("Three insertions with two shared common suffixes and subsequent search returns those shared suffixes"){
         REQUIRE_NOTHROW(md->insert(singlySearchSeq5, doublySearchSeq5, searchString5));
         REQUIRE_NOTHROW(md->insert(singlySearchSeq1, doublySearchSeq1, searchString1));
         REQUIRE_NOTHROW(md->insert(singlySearchSeq2, doublySearchSeq2, searchString2));
@@ -97,7 +97,7 @@ TEST_CASE("Testing Mass Dawg"){
         REQUIRE(hasString(results, "AB"));
     }
 
-    SECTION("Three insertions in order with all three shared suffixes and subseqeunt search returns all three kmers"){
+    SECTION("Three insertions with all three shared suffixes and subseqeunt search returns all three kmers"){
         REQUIRE_NOTHROW(md->insert(singlySearchSeq3, doublySearchSeq3, searchString3));
         REQUIRE_NOTHROW(md->insert(singlySearchSeq4, doublySearchSeq4, searchString4));
         REQUIRE_NOTHROW(md->insert(singlySearchSeq2, doublySearchSeq2, searchString2));
@@ -110,7 +110,7 @@ TEST_CASE("Testing Mass Dawg"){
         REQUIRE(hasString(results, searchString2));
     }
 
-    SECTION("Three insertions in order with no shared suffixes and full length search does not return all 3 full kmers"){
+    SECTION("Three insertions with no shared suffixes and full length search does not return all 3 full kmers"){
         REQUIRE_NOTHROW(md->insert(singlySearchSeq3, doublySearchSeq3, searchString3));
         REQUIRE_NOTHROW(md->insert(singlySearchSeq5, doublySearchSeq5, searchString5));
         REQUIRE_NOTHROW(md->insert(singlySearchSeq1, doublySearchSeq1, searchString1));

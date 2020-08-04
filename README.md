@@ -121,8 +121,7 @@ To just build and NOT run tests, follow those steps but do so for the file `buil
 
 To include in your workflow, simply import `MassDawg.hpp` in your file.
 
-### Special Usage instructions
-While online algorithms exist for unsorted input data into a DAWG with successful compression, this is not one. This DAWG is more traditional, and all input data MUST be sorted. If not, an error is thrown. The in order insertion allows for an easier compression of the branches into a graph.
+__UPDATE__: As of August 4th 2020, sequences can be inserted out of order 
 
 ### Example 
 
@@ -211,12 +210,10 @@ AXYD
 
 ### Exposed MassDawg functions (API)
 * __void show()__: Print the graph to the console as a tree (merged nodes have their kmers put into a list)
-* __void insert(vector<float> singlySequence, vector<float> doublySequence, string kmer)__: Insert a pair of singly charged and doubly charged masses into the dawg associated withthe kmer (all 3 parameters MUST be the same length)
+* __void insert(vector<float> singlySequence, vector<float> doublySequence, string kmer)__: Insert a pair of singly charged and doubly charged masses into the dawg associated with the kmer (all 3 parameters MUST be the same length)
 * __vector<string> fuzzySearch(vector<float> sequence, int gapAllowance, int ppmTol)__: Search the graph for a sequence of floats allowing for up to gapAllowance missed masses. ppmTol is the allowed tolerance for a mass to fall within (ppm = parts per million)
 * __void finish()__: Go through the graph one final time to merge all remaining nodes that have not been checked for duplicates.
 
-## Notes
-The files `MassDawgc.*` are aggregated versions of `MassDawg.*`, `MassDawgNode.*`, and `utils.*`. Those two files are used in creating the python bindings for this module.
 
 ## Python bindings
 More information on how to use the python version of this module can be found [here](https://github.com/zmcgrath96/mass_DAWG/tree/master/python_bindings)

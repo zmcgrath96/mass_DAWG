@@ -33,6 +33,18 @@ public:
     ~PreviousSequence(){}
 };
 
+class LongestCommonPrefix {
+public:
+    vector<float> singlySequence;
+    vector<float> doublySequence;
+    vector<MassDawgNode *> nodes;
+
+    LongestCommonPrefix() {}
+    LongestCommonPrefix(vector<float> sS, vector<float> dS, vector<MassDawgNode *> nodes);
+
+    ~LongestCommonPrefix() {}
+};
+
 class MassDawg{
 public:
     // empty constructor takes no values
@@ -88,16 +100,6 @@ private:
     void minimize(int downTo);
 
     /**
-     * Checks to see if the new sequences are greater than the old previous sequence
-     * 
-     * @param singlySequence    vector<float>  the new sequence of singly charged masses
-     * @param doublySequence    vector<float>  the new sequence of doubly charged masses
-     * 
-     * @return bool     True if the new sequences are greater than the prvious, False otherwise
-    */
-    bool previousIsLessThan(vector<float> singlySequence, vector<float> doublySequence);
-
-    /**
      * Recursive search of the graph allowing for gapAllowance missed masses in the
      * search before returning whatever is found at the level
      * 
@@ -111,5 +113,15 @@ private:
     */
     vector<string> fuzzySearchRec(vector<float> sequence, MassDawgNode * currentNode, int currentGap, int gapAllowance, int ppmTol);
 
+    /**
+     * Find the longest common prefix of input sequences to a path in the tree. Used for out
+     * of order insertions.
+     * 
+     * @param singlySequence    vector<float>   the singly sequence we are looking for a prefix of
+     * @param doublySequence    vector<float>   the doubly sequence we are looking for a prefix of
+     * 
+     * @returns LongestCommonPrefix   the class instance holding the longest common prefixe
+    */
+    LongestCommonPrefix longestCommonPrefix(vector<float> singlySequence, vector<float> doublySequence);
 };
 #endif

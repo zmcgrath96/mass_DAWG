@@ -3,6 +3,12 @@
 
 /*******************Public methods*******************/
 
+LongestCommonPrefix::LongestCommonPrefix(vector<float> sS, vector<float> dS, vector<MassDawgNode *> nodes){
+        this->singlySequence = sS;
+        this->doublySequence = dS;
+        this->nodes = nodes;
+    };
+
 // empty constructor takes no values
 MassDawg::MassDawg(){
     this->root = new MassDawgNode();
@@ -28,26 +34,12 @@ void MassDawg::show(){
  * @param kmer              string          the sequence of amino acids associated with this mass
 */
 void MassDawg::insert(vector<float> singlySequence, vector<float> doublySequence, string kmer){
-    // if the new one is not greater than the last one, we need to throw
-    if (!this->previousIsLessThan(singlySequence, doublySequence)) {
-        throw "Error: sequences must be inserted in lowest to highest order";
-    }
+    // get the longest common prefix of this new sequence
+    LongestCommonPrefix lcp = this->longestCommonPrefix(singlySequence, doublySequence);
 
-    // find the common prefix between the new sequence and the last sequence (mass based)
-    int commonPrefix = 0;
-    int iterLength = MIN((int)singlySequence.size(), (int)this->ps.singlySequence.size());
-
-    // go through and see how much these sequences have in common
-    for (int i = 0; i < iterLength; i++){
-        // if either of the singly or doubly sequences are not the same, break
-        if ((singlySequence[i] != this->ps.singlySequence[i]) 
-        || (doublySequence[i] != this->ps.doublySequence[i])) break;
-
-        // update the kmer at the node at this position in the previous sequence
-        (*this->ps.nodes[i]).addKmer(kmer.substr(0, i + 1));
-
-        commonPrefix ++;
-    }
+    // add this kmer to all of the nodes in the lcp
+    for (MassDawgNode * node: lcp.nodes) node->addKmer(kmer);
+    int commonPrefix = (int)lcp.singlySequence.size();
 
     // minimize the previous sequence
     this->minimize(commonPrefix);
@@ -207,41 +199,6 @@ void MassDawg::minimize(int downTo){
 }
 
 /**
- * Checks to see if the new sequences are greater than the old previous sequence
- * 
- * @param singlySequence    vector<float>  the new sequence of singly charged masses
- * @param doublySequence    vector<float>  the new sequence of doubly charged masses
- * 
- * @return bool     True if the new sequences are greater than the prvious, False otherwise
-*/
-bool MassDawg::previousIsLessThan(vector<float> singlySequence, vector<float> doublySequence){
-    // get the lengths of each and determine the shorter one
-    int newLength = (int)singlySequence.size();
-    int oldLength = (int)this->ps.singlySequence.size();
-
-    int iterLength = MIN(newLength, oldLength);
-
-    for (int i = 0; i < iterLength; i ++){
-
-        // if the new one in either the singly OR doubly
-        // is greater than the previous at i, retutn False
-        if ((singlySequence[i] < this->ps.singlySequence[i])
-        || (doublySequence[i] < this->ps.doublySequence[i])){
-            return false;
-        }
-
-        // if the new one is greater than the old one, return true
-        if ((singlySequence[i] > this->ps.singlySequence[i])
-        && (doublySequence[i] > this->ps.doublySequence[i])){
-            return true;
-        }
-    }
-
-    return newLength >= oldLength;
-}
-
-
-/**
  * Recursive search of the graph allowing for gapAllowance missed masses in the
  * search before returning whatever is found at the level
  * 
@@ -334,5 +291,57 @@ vector<string> MassDawg::fuzzySearchRec(vector<float> sequence, MassDawgNode * c
 
     // otherwise return results
     return results.empty() ? emptyResult : results;
+}
+
+/**
+ * Find the longest common prefix of input sequences to a path in the tree. Used for out
+ * of order insertions.
+ * 
+ * @param singlySequence    vector<float>   the singly sequence we are looking for a prefix of
+ * @param doublySequence    vector<float>   the doubly sequence we are looking for a prefix of
+ * 
+ * @returns LongestCommonPrefix *   the class instance holding the longest common prefixe
+*/
+LongestCommonPrefix MassDawg::longestCommonPrefix(vector<float> singlySequence, vector<float> doublySequence){
+    // first check to see if we should return the root
+    bool rootHasChild = false;
+    float delta = .0001;
+    for (MassDawgNode * child: root->children){
+        if (abs(child->singlyMass - singlySequence[0]) < delta && abs(child->doublyMass - doublySequence[0]) < delta){
+            rootHasChild = true;
+            break;
+        }
+    }
+
+    // if the root does not have a child
+    if (!rootHasChild){
+        return LongestCommonPrefix(vector<float> {}, vector<float> {}, vector<MassDawgNode *> {this->root});
+    }
+
+    MassDawgNode * currentNode = this->root;
+    LongestCommonPrefix lcp;
+    for (int i = 0; i < (int)singlySequence.size(); i++){
+        // go through the current node's children, and if the child has a node that meets the weight at i,
+        // add it ot the list
+
+        // keep track if we continued the common prefix
+        bool extended = false;
+
+        for (MassDawgNode * child: currentNode->children){
+
+            // if both the singly and doubly sequence were found, add it to the list and end this loop
+            if (abs(child->singlyMass - singlySequence[i]) < delta && abs(child->doublyMass - doublySequence[i]) < delta){
+                lcp.nodes.push_back(child);
+                lcp.singlySequence.push_back(singlySequence[i]);
+                lcp.doublySequence.push_back(doublySequence[i]);
+                extended = true;
+                break;
+            }
+        }
+
+        // if we didn't extend, break
+        if (!extended) break;
+    }
+    return lcp;
 }
 
