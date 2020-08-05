@@ -172,8 +172,10 @@ vector<string> MassDawg::fuzzySearch(vector<float> sequence, int gapAllowance, i
 vector<string> MassDawg::search(vector<float> sequence, int ppmTol){
     MassDawgNode * currentNode = this->root;
 
+    if (sequence.empty()) return vector<string> {};
+
     // sort the sequence to ensure order
-    sort(sequence.begin(), sequence.end());
+    sort(sequence.begin(), sequence.end(), greater<float>());
 
     while (true){
         bool extended = false;
