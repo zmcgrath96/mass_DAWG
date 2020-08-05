@@ -175,7 +175,7 @@ vector<string> MassDawg::search(vector<float> sequence, int ppmTol){
     if (sequence.empty()) return vector<string> {};
 
     // sort the sequence to ensure order
-    std::sort(sequence.begin(), sequence.end(), greater<float>());
+    std::sort(sequence.begin(), sequence.end(), std::greater<float>());
 
     while (true){
         bool extended = false;
