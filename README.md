@@ -212,6 +212,7 @@ AXYD
 * __void show()__: Print the graph to the console as a tree (merged nodes have their kmers put into a list)
 * __void insert(vector<float> singlySequence, vector<float> doublySequence, string kmer)__: Insert a pair of singly charged and doubly charged masses into the dawg associated with the kmer (all 3 parameters MUST be the same length)
 * __vector<string> fuzzySearch(vector<float> sequence, int gapAllowance, int ppmTol)__: Search the graph for a sequence of floats allowing for up to gapAllowance missed masses. ppmTol is the allowed tolerance for a mass to fall within (ppm = parts per million)
+*__vector<string> search(vector<float> sequence, int ppmTol)__: Search the graph for a sequence of floats with no missed masses. ppmTol is the allowed tolerance for a mass to fall within (ppm = parts per million)
 * __void finish()__: Go through the graph one final time to merge all remaining nodes that have not been checked for duplicates.
 
 

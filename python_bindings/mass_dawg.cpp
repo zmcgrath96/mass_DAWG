@@ -1372,9 +1372,10 @@ static void __pyx_pf_9mass_dawg_10PyMassDawg_2__dealloc__(struct __pyx_obj_9mass
 static PyObject *__pyx_pf_9mass_dawg_10PyMassDawg_4show(struct __pyx_obj_9mass_dawg_PyMassDawg *__pyx_v_self); /* proto */
 static PyObject *__pyx_pf_9mass_dawg_10PyMassDawg_6insert(struct __pyx_obj_9mass_dawg_PyMassDawg *__pyx_v_self, PyObject *__pyx_v_singly_sequence, PyObject *__pyx_v_doubly_sequence, PyObject *__pyx_v_kmer); /* proto */
 static PyObject *__pyx_pf_9mass_dawg_10PyMassDawg_8fuzzy_search(struct __pyx_obj_9mass_dawg_PyMassDawg *__pyx_v_self, PyObject *__pyx_v_search_sequence, PyObject *__pyx_v_gap_allowance, PyObject *__pyx_v_ppm_tol); /* proto */
-static PyObject *__pyx_pf_9mass_dawg_10PyMassDawg_10finish(struct __pyx_obj_9mass_dawg_PyMassDawg *__pyx_v_self); /* proto */
-static PyObject *__pyx_pf_9mass_dawg_10PyMassDawg_12__reduce_cython__(CYTHON_UNUSED struct __pyx_obj_9mass_dawg_PyMassDawg *__pyx_v_self); /* proto */
-static PyObject *__pyx_pf_9mass_dawg_10PyMassDawg_14__setstate_cython__(CYTHON_UNUSED struct __pyx_obj_9mass_dawg_PyMassDawg *__pyx_v_self, CYTHON_UNUSED PyObject *__pyx_v___pyx_state); /* proto */
+static PyObject *__pyx_pf_9mass_dawg_10PyMassDawg_10search(struct __pyx_obj_9mass_dawg_PyMassDawg *__pyx_v_self, PyObject *__pyx_v_search_sequence, PyObject *__pyx_v_ppm_tol); /* proto */
+static PyObject *__pyx_pf_9mass_dawg_10PyMassDawg_12finish(struct __pyx_obj_9mass_dawg_PyMassDawg *__pyx_v_self); /* proto */
+static PyObject *__pyx_pf_9mass_dawg_10PyMassDawg_14__reduce_cython__(CYTHON_UNUSED struct __pyx_obj_9mass_dawg_PyMassDawg *__pyx_v_self); /* proto */
+static PyObject *__pyx_pf_9mass_dawg_10PyMassDawg_16__setstate_cython__(CYTHON_UNUSED struct __pyx_obj_9mass_dawg_PyMassDawg *__pyx_v_self, CYTHON_UNUSED PyObject *__pyx_v___pyx_state); /* proto */
 static PyObject *__pyx_tp_new_9mass_dawg_PyMassDawg(PyTypeObject *t, PyObject *a, PyObject *k); /*proto*/
 static PyObject *__pyx_tuple_;
 static PyObject *__pyx_tuple__2;
@@ -1495,12 +1496,13 @@ static void __pyx_pf_9mass_dawg_10PyMassDawg_2__dealloc__(struct __pyx_obj_9mass
  *         del self.m_dawg
  * 
  *     def show(self) -> None:             # <<<<<<<<<<<<<<
- *         self.m_dawg.show()
- * 
+ *         '''
+ *         Print the graph to the console as a tree
  */
 
 /* Python wrapper */
 static PyObject *__pyx_pw_9mass_dawg_10PyMassDawg_5show(PyObject *__pyx_v_self, CYTHON_UNUSED PyObject *unused); /*proto*/
+static char __pyx_doc_9mass_dawg_10PyMassDawg_4show[] = "\n        Print the graph to the console as a tree\n        ";
 static PyObject *__pyx_pw_9mass_dawg_10PyMassDawg_5show(PyObject *__pyx_v_self, CYTHON_UNUSED PyObject *unused) {
   PyObject *__pyx_r = 0;
   __Pyx_RefNannyDeclarations
@@ -1517,9 +1519,9 @@ static PyObject *__pyx_pf_9mass_dawg_10PyMassDawg_4show(struct __pyx_obj_9mass_d
   __Pyx_RefNannyDeclarations
   __Pyx_RefNannySetupContext("show", 0);
 
-  /* "mass_dawg.pyx":22
- * 
- *     def show(self) -> None:
+  /* "mass_dawg.pyx":25
+ *         Print the graph to the console as a tree
+ *         '''
  *         self.m_dawg.show()             # <<<<<<<<<<<<<<
  * 
  *     def insert(self, singly_sequence: list, doubly_sequence: list, kmer: str) -> None:
@@ -1530,8 +1532,8 @@ static PyObject *__pyx_pf_9mass_dawg_10PyMassDawg_4show(struct __pyx_obj_9mass_d
  *         del self.m_dawg
  * 
  *     def show(self) -> None:             # <<<<<<<<<<<<<<
- *         self.m_dawg.show()
- * 
+ *         '''
+ *         Print the graph to the console as a tree
  */
 
   /* function exit code */
@@ -1541,16 +1543,17 @@ static PyObject *__pyx_pf_9mass_dawg_10PyMassDawg_4show(struct __pyx_obj_9mass_d
   return __pyx_r;
 }
 
-/* "mass_dawg.pyx":24
+/* "mass_dawg.pyx":27
  *         self.m_dawg.show()
  * 
  *     def insert(self, singly_sequence: list, doubly_sequence: list, kmer: str) -> None:             # <<<<<<<<<<<<<<
- *         cdef vector[float] singly_vec = singly_sequence
- *         cdef vector[float] doubly_vec = doubly_sequence
+ *         '''
+ *         Insert a singly and doubly sequence into the graph associated with a kmer
  */
 
 /* Python wrapper */
 static PyObject *__pyx_pw_9mass_dawg_10PyMassDawg_7insert(PyObject *__pyx_v_self, PyObject *__pyx_args, PyObject *__pyx_kwds); /*proto*/
+static char __pyx_doc_9mass_dawg_10PyMassDawg_6insert[] = "\n        Insert a singly and doubly sequence into the graph associated with a kmer\n\n        Inputs:\n            singly_sequence:    (list) singly charged masses (floats) to add to the graph\n            doubly_sequence:    (list) doubly charged masses (floats) to add to the graph\n            kmer:               (str) the kmer associated with these masses\n        Outputs:\n            None\n        ";
 static PyObject *__pyx_pw_9mass_dawg_10PyMassDawg_7insert(PyObject *__pyx_v_self, PyObject *__pyx_args, PyObject *__pyx_kwds) {
   PyObject *__pyx_v_singly_sequence = 0;
   PyObject *__pyx_v_doubly_sequence = 0;
@@ -1586,17 +1589,17 @@ static PyObject *__pyx_pw_9mass_dawg_10PyMassDawg_7insert(PyObject *__pyx_v_self
         case  1:
         if (likely((values[1] = __Pyx_PyDict_GetItemStr(__pyx_kwds, __pyx_n_s_doubly_sequence)) != 0)) kw_args--;
         else {
-          __Pyx_RaiseArgtupleInvalid("insert", 1, 3, 3, 1); __PYX_ERR(1, 24, __pyx_L3_error)
+          __Pyx_RaiseArgtupleInvalid("insert", 1, 3, 3, 1); __PYX_ERR(1, 27, __pyx_L3_error)
         }
         CYTHON_FALLTHROUGH;
         case  2:
         if (likely((values[2] = __Pyx_PyDict_GetItemStr(__pyx_kwds, __pyx_n_s_kmer)) != 0)) kw_args--;
         else {
-          __Pyx_RaiseArgtupleInvalid("insert", 1, 3, 3, 2); __PYX_ERR(1, 24, __pyx_L3_error)
+          __Pyx_RaiseArgtupleInvalid("insert", 1, 3, 3, 2); __PYX_ERR(1, 27, __pyx_L3_error)
         }
       }
       if (unlikely(kw_args > 0)) {
-        if (unlikely(__Pyx_ParseOptionalKeywords(__pyx_kwds, __pyx_pyargnames, 0, values, pos_args, "insert") < 0)) __PYX_ERR(1, 24, __pyx_L3_error)
+        if (unlikely(__Pyx_ParseOptionalKeywords(__pyx_kwds, __pyx_pyargnames, 0, values, pos_args, "insert") < 0)) __PYX_ERR(1, 27, __pyx_L3_error)
       }
     } else if (PyTuple_GET_SIZE(__pyx_args) != 3) {
       goto __pyx_L5_argtuple_error;
@@ -1611,15 +1614,15 @@ static PyObject *__pyx_pw_9mass_dawg_10PyMassDawg_7insert(PyObject *__pyx_v_self
   }
   goto __pyx_L4_argument_unpacking_done;
   __pyx_L5_argtuple_error:;
-  __Pyx_RaiseArgtupleInvalid("insert", 1, 3, 3, PyTuple_GET_SIZE(__pyx_args)); __PYX_ERR(1, 24, __pyx_L3_error)
+  __Pyx_RaiseArgtupleInvalid("insert", 1, 3, 3, PyTuple_GET_SIZE(__pyx_args)); __PYX_ERR(1, 27, __pyx_L3_error)
   __pyx_L3_error:;
   __Pyx_AddTraceback("mass_dawg.PyMassDawg.insert", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __Pyx_RefNannyFinishContext();
   return NULL;
   __pyx_L4_argument_unpacking_done:;
-  if (unlikely(!__Pyx_ArgTypeTest(((PyObject *)__pyx_v_singly_sequence), (&PyList_Type), 1, "singly_sequence", 1))) __PYX_ERR(1, 24, __pyx_L1_error)
-  if (unlikely(!__Pyx_ArgTypeTest(((PyObject *)__pyx_v_doubly_sequence), (&PyList_Type), 1, "doubly_sequence", 1))) __PYX_ERR(1, 24, __pyx_L1_error)
-  if (unlikely(!__Pyx_ArgTypeTest(((PyObject *)__pyx_v_kmer), (&PyString_Type), 1, "kmer", 1))) __PYX_ERR(1, 24, __pyx_L1_error)
+  if (unlikely(!__Pyx_ArgTypeTest(((PyObject *)__pyx_v_singly_sequence), (&PyList_Type), 1, "singly_sequence", 1))) __PYX_ERR(1, 27, __pyx_L1_error)
+  if (unlikely(!__Pyx_ArgTypeTest(((PyObject *)__pyx_v_doubly_sequence), (&PyList_Type), 1, "doubly_sequence", 1))) __PYX_ERR(1, 27, __pyx_L1_error)
+  if (unlikely(!__Pyx_ArgTypeTest(((PyObject *)__pyx_v_kmer), (&PyString_Type), 1, "kmer", 1))) __PYX_ERR(1, 27, __pyx_L1_error)
   __pyx_r = __pyx_pf_9mass_dawg_10PyMassDawg_6insert(((struct __pyx_obj_9mass_dawg_PyMassDawg *)__pyx_v_self), __pyx_v_singly_sequence, __pyx_v_doubly_sequence, __pyx_v_kmer);
 
   /* function exit code */
@@ -1650,34 +1653,34 @@ static PyObject *__pyx_pf_9mass_dawg_10PyMassDawg_6insert(struct __pyx_obj_9mass
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("insert", 0);
 
-  /* "mass_dawg.pyx":25
- * 
- *     def insert(self, singly_sequence: list, doubly_sequence: list, kmer: str) -> None:
+  /* "mass_dawg.pyx":38
+ *             None
+ *         '''
  *         cdef vector[float] singly_vec = singly_sequence             # <<<<<<<<<<<<<<
  *         cdef vector[float] doubly_vec = doubly_sequence
  * 
  */
-  __pyx_t_1 = __pyx_convert_vector_from_py_float(__pyx_v_singly_sequence); if (unlikely(PyErr_Occurred())) __PYX_ERR(1, 25, __pyx_L1_error)
+  __pyx_t_1 = __pyx_convert_vector_from_py_float(__pyx_v_singly_sequence); if (unlikely(PyErr_Occurred())) __PYX_ERR(1, 38, __pyx_L1_error)
   __pyx_v_singly_vec = __pyx_t_1;
 
-  /* "mass_dawg.pyx":26
- *     def insert(self, singly_sequence: list, doubly_sequence: list, kmer: str) -> None:
+  /* "mass_dawg.pyx":39
+ *         '''
  *         cdef vector[float] singly_vec = singly_sequence
  *         cdef vector[float] doubly_vec = doubly_sequence             # <<<<<<<<<<<<<<
  * 
  *         cdef string input_kmer = str.encode(kmer)
  */
-  __pyx_t_1 = __pyx_convert_vector_from_py_float(__pyx_v_doubly_sequence); if (unlikely(PyErr_Occurred())) __PYX_ERR(1, 26, __pyx_L1_error)
+  __pyx_t_1 = __pyx_convert_vector_from_py_float(__pyx_v_doubly_sequence); if (unlikely(PyErr_Occurred())) __PYX_ERR(1, 39, __pyx_L1_error)
   __pyx_v_doubly_vec = __pyx_t_1;
 
-  /* "mass_dawg.pyx":28
+  /* "mass_dawg.pyx":41
  *         cdef vector[float] doubly_vec = doubly_sequence
  * 
  *         cdef string input_kmer = str.encode(kmer)             # <<<<<<<<<<<<<<
  * 
  *         try:
  */
-  __pyx_t_3 = __Pyx_PyObject_GetAttrStr(((PyObject *)(&PyString_Type)), __pyx_n_s_encode); if (unlikely(!__pyx_t_3)) __PYX_ERR(1, 28, __pyx_L1_error)
+  __pyx_t_3 = __Pyx_PyObject_GetAttrStr(((PyObject *)(&PyString_Type)), __pyx_n_s_encode); if (unlikely(!__pyx_t_3)) __PYX_ERR(1, 41, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_3);
   __pyx_t_4 = NULL;
   if (CYTHON_UNPACK_METHODS && likely(PyMethod_Check(__pyx_t_3))) {
@@ -1691,14 +1694,14 @@ static PyObject *__pyx_pf_9mass_dawg_10PyMassDawg_6insert(struct __pyx_obj_9mass
   }
   __pyx_t_2 = (__pyx_t_4) ? __Pyx_PyObject_Call2Args(__pyx_t_3, __pyx_t_4, __pyx_v_kmer) : __Pyx_PyObject_CallOneArg(__pyx_t_3, __pyx_v_kmer);
   __Pyx_XDECREF(__pyx_t_4); __pyx_t_4 = 0;
-  if (unlikely(!__pyx_t_2)) __PYX_ERR(1, 28, __pyx_L1_error)
+  if (unlikely(!__pyx_t_2)) __PYX_ERR(1, 41, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
   __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
-  __pyx_t_5 = __pyx_convert_string_from_py_std__in_string(__pyx_t_2); if (unlikely(PyErr_Occurred())) __PYX_ERR(1, 28, __pyx_L1_error)
+  __pyx_t_5 = __pyx_convert_string_from_py_std__in_string(__pyx_t_2); if (unlikely(PyErr_Occurred())) __PYX_ERR(1, 41, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
   __pyx_v_input_kmer = __pyx_t_5;
 
-  /* "mass_dawg.pyx":30
+  /* "mass_dawg.pyx":43
  *         cdef string input_kmer = str.encode(kmer)
  * 
  *         try:             # <<<<<<<<<<<<<<
@@ -1714,7 +1717,7 @@ static PyObject *__pyx_pf_9mass_dawg_10PyMassDawg_6insert(struct __pyx_obj_9mass
     __Pyx_XGOTREF(__pyx_t_8);
     /*try:*/ {
 
-      /* "mass_dawg.pyx":31
+      /* "mass_dawg.pyx":44
  * 
  *         try:
  *             self.m_dawg.insert(singly_vec, doubly_vec, input_kmer)             # <<<<<<<<<<<<<<
@@ -1725,10 +1728,10 @@ static PyObject *__pyx_pf_9mass_dawg_10PyMassDawg_6insert(struct __pyx_obj_9mass
         __pyx_v_self->m_dawg->insert(__pyx_v_singly_vec, __pyx_v_doubly_vec, __pyx_v_input_kmer);
       } catch(...) {
         __Pyx_CppExn2PyErr();
-        __PYX_ERR(1, 31, __pyx_L3_error)
+        __PYX_ERR(1, 44, __pyx_L3_error)
       }
 
-      /* "mass_dawg.pyx":30
+      /* "mass_dawg.pyx":43
  *         cdef string input_kmer = str.encode(kmer)
  * 
  *         try:             # <<<<<<<<<<<<<<
@@ -1745,7 +1748,7 @@ static PyObject *__pyx_pf_9mass_dawg_10PyMassDawg_6insert(struct __pyx_obj_9mass
     __Pyx_XDECREF(__pyx_t_3); __pyx_t_3 = 0;
     __Pyx_XDECREF(__pyx_t_4); __pyx_t_4 = 0;
 
-    /* "mass_dawg.pyx":32
+    /* "mass_dawg.pyx":45
  *         try:
  *             self.m_dawg.insert(singly_vec, doubly_vec, input_kmer)
  *         except:             # <<<<<<<<<<<<<<
@@ -1754,19 +1757,19 @@ static PyObject *__pyx_pf_9mass_dawg_10PyMassDawg_6insert(struct __pyx_obj_9mass
  */
     /*except:*/ {
       __Pyx_AddTraceback("mass_dawg.PyMassDawg.insert", __pyx_clineno, __pyx_lineno, __pyx_filename);
-      if (__Pyx_GetException(&__pyx_t_2, &__pyx_t_3, &__pyx_t_4) < 0) __PYX_ERR(1, 32, __pyx_L5_except_error)
+      if (__Pyx_GetException(&__pyx_t_2, &__pyx_t_3, &__pyx_t_4) < 0) __PYX_ERR(1, 45, __pyx_L5_except_error)
       __Pyx_GOTREF(__pyx_t_2);
       __Pyx_GOTREF(__pyx_t_3);
       __Pyx_GOTREF(__pyx_t_4);
 
-      /* "mass_dawg.pyx":33
+      /* "mass_dawg.pyx":46
  *             self.m_dawg.insert(singly_vec, doubly_vec, input_kmer)
  *         except:
  *             print("ERROR: Items must be sorted smallest to largest for insertion")             # <<<<<<<<<<<<<<
  * 
  *     def fuzzy_search(self, search_sequence: list, gap_allowance: int, ppm_tol: int) -> list:
  */
-      if (__Pyx_PrintOne(0, __pyx_kp_s_ERROR_Items_must_be_sorted_small) < 0) __PYX_ERR(1, 33, __pyx_L5_except_error)
+      if (__Pyx_PrintOne(0, __pyx_kp_s_ERROR_Items_must_be_sorted_small) < 0) __PYX_ERR(1, 46, __pyx_L5_except_error)
       __Pyx_XDECREF(__pyx_t_2); __pyx_t_2 = 0;
       __Pyx_XDECREF(__pyx_t_3); __pyx_t_3 = 0;
       __Pyx_XDECREF(__pyx_t_4); __pyx_t_4 = 0;
@@ -1774,7 +1777,7 @@ static PyObject *__pyx_pf_9mass_dawg_10PyMassDawg_6insert(struct __pyx_obj_9mass
     }
     __pyx_L5_except_error:;
 
-    /* "mass_dawg.pyx":30
+    /* "mass_dawg.pyx":43
  *         cdef string input_kmer = str.encode(kmer)
  * 
  *         try:             # <<<<<<<<<<<<<<
@@ -1794,12 +1797,12 @@ static PyObject *__pyx_pf_9mass_dawg_10PyMassDawg_6insert(struct __pyx_obj_9mass
     __pyx_L8_try_end:;
   }
 
-  /* "mass_dawg.pyx":24
+  /* "mass_dawg.pyx":27
  *         self.m_dawg.show()
  * 
  *     def insert(self, singly_sequence: list, doubly_sequence: list, kmer: str) -> None:             # <<<<<<<<<<<<<<
- *         cdef vector[float] singly_vec = singly_sequence
- *         cdef vector[float] doubly_vec = doubly_sequence
+ *         '''
+ *         Insert a singly and doubly sequence into the graph associated with a kmer
  */
 
   /* function exit code */
@@ -1817,16 +1820,17 @@ static PyObject *__pyx_pf_9mass_dawg_10PyMassDawg_6insert(struct __pyx_obj_9mass
   return __pyx_r;
 }
 
-/* "mass_dawg.pyx":35
+/* "mass_dawg.pyx":48
  *             print("ERROR: Items must be sorted smallest to largest for insertion")
  * 
  *     def fuzzy_search(self, search_sequence: list, gap_allowance: int, ppm_tol: int) -> list:             # <<<<<<<<<<<<<<
- *         cdef vector[float] search_seq_vec = search_sequence
- * 
+ *         '''
+ *         Search for a sequence in the graph allowing for up to gap_allowance missed masses in the search
  */
 
 /* Python wrapper */
 static PyObject *__pyx_pw_9mass_dawg_10PyMassDawg_9fuzzy_search(PyObject *__pyx_v_self, PyObject *__pyx_args, PyObject *__pyx_kwds); /*proto*/
+static char __pyx_doc_9mass_dawg_10PyMassDawg_8fuzzy_search[] = "\n        Search for a sequence in the graph allowing for up to gap_allowance missed masses in the search\n\n        Inputs:\n            search_sequence:    (list) the sequence of masses (floats) to search for\n            gap_allowance:      (int) the number of gaps allowed in the search\n            ppm_tol:            (int) the allowed difference (in parts per million) allowed \n                                      between an observed and theoretical mass to be called a match\n        Outputs:\n            (list) kmers (strings) found in the recursive search\n        ";
 static PyObject *__pyx_pw_9mass_dawg_10PyMassDawg_9fuzzy_search(PyObject *__pyx_v_self, PyObject *__pyx_args, PyObject *__pyx_kwds) {
   PyObject *__pyx_v_search_sequence = 0;
   PyObject *__pyx_v_gap_allowance = 0;
@@ -1862,17 +1866,17 @@ static PyObject *__pyx_pw_9mass_dawg_10PyMassDawg_9fuzzy_search(PyObject *__pyx_
         case  1:
         if (likely((values[1] = __Pyx_PyDict_GetItemStr(__pyx_kwds, __pyx_n_s_gap_allowance)) != 0)) kw_args--;
         else {
-          __Pyx_RaiseArgtupleInvalid("fuzzy_search", 1, 3, 3, 1); __PYX_ERR(1, 35, __pyx_L3_error)
+          __Pyx_RaiseArgtupleInvalid("fuzzy_search", 1, 3, 3, 1); __PYX_ERR(1, 48, __pyx_L3_error)
         }
         CYTHON_FALLTHROUGH;
         case  2:
         if (likely((values[2] = __Pyx_PyDict_GetItemStr(__pyx_kwds, __pyx_n_s_ppm_tol)) != 0)) kw_args--;
         else {
-          __Pyx_RaiseArgtupleInvalid("fuzzy_search", 1, 3, 3, 2); __PYX_ERR(1, 35, __pyx_L3_error)
+          __Pyx_RaiseArgtupleInvalid("fuzzy_search", 1, 3, 3, 2); __PYX_ERR(1, 48, __pyx_L3_error)
         }
       }
       if (unlikely(kw_args > 0)) {
-        if (unlikely(__Pyx_ParseOptionalKeywords(__pyx_kwds, __pyx_pyargnames, 0, values, pos_args, "fuzzy_search") < 0)) __PYX_ERR(1, 35, __pyx_L3_error)
+        if (unlikely(__Pyx_ParseOptionalKeywords(__pyx_kwds, __pyx_pyargnames, 0, values, pos_args, "fuzzy_search") < 0)) __PYX_ERR(1, 48, __pyx_L3_error)
       }
     } else if (PyTuple_GET_SIZE(__pyx_args) != 3) {
       goto __pyx_L5_argtuple_error;
@@ -1887,13 +1891,13 @@ static PyObject *__pyx_pw_9mass_dawg_10PyMassDawg_9fuzzy_search(PyObject *__pyx_
   }
   goto __pyx_L4_argument_unpacking_done;
   __pyx_L5_argtuple_error:;
-  __Pyx_RaiseArgtupleInvalid("fuzzy_search", 1, 3, 3, PyTuple_GET_SIZE(__pyx_args)); __PYX_ERR(1, 35, __pyx_L3_error)
+  __Pyx_RaiseArgtupleInvalid("fuzzy_search", 1, 3, 3, PyTuple_GET_SIZE(__pyx_args)); __PYX_ERR(1, 48, __pyx_L3_error)
   __pyx_L3_error:;
   __Pyx_AddTraceback("mass_dawg.PyMassDawg.fuzzy_search", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __Pyx_RefNannyFinishContext();
   return NULL;
   __pyx_L4_argument_unpacking_done:;
-  if (unlikely(!__Pyx_ArgTypeTest(((PyObject *)__pyx_v_search_sequence), (&PyList_Type), 1, "search_sequence", 1))) __PYX_ERR(1, 35, __pyx_L1_error)
+  if (unlikely(!__Pyx_ArgTypeTest(((PyObject *)__pyx_v_search_sequence), (&PyList_Type), 1, "search_sequence", 1))) __PYX_ERR(1, 48, __pyx_L1_error)
   __pyx_r = __pyx_pf_9mass_dawg_10PyMassDawg_8fuzzy_search(((struct __pyx_obj_9mass_dawg_PyMassDawg *)__pyx_v_self), __pyx_v_search_sequence, __pyx_v_gap_allowance, __pyx_v_ppm_tol);
 
   /* function exit code */
@@ -1923,28 +1927,28 @@ static PyObject *__pyx_pf_9mass_dawg_10PyMassDawg_8fuzzy_search(struct __pyx_obj
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("fuzzy_search", 0);
 
-  /* "mass_dawg.pyx":36
- * 
- *     def fuzzy_search(self, search_sequence: list, gap_allowance: int, ppm_tol: int) -> list:
+  /* "mass_dawg.pyx":60
+ *             (list) kmers (strings) found in the recursive search
+ *         '''
  *         cdef vector[float] search_seq_vec = search_sequence             # <<<<<<<<<<<<<<
  * 
  *         cdef vector[string] results = self.m_dawg.fuzzySearch(search_seq_vec, gap_allowance, ppm_tol)
  */
-  __pyx_t_1 = __pyx_convert_vector_from_py_float(__pyx_v_search_sequence); if (unlikely(PyErr_Occurred())) __PYX_ERR(1, 36, __pyx_L1_error)
+  __pyx_t_1 = __pyx_convert_vector_from_py_float(__pyx_v_search_sequence); if (unlikely(PyErr_Occurred())) __PYX_ERR(1, 60, __pyx_L1_error)
   __pyx_v_search_seq_vec = __pyx_t_1;
 
-  /* "mass_dawg.pyx":38
+  /* "mass_dawg.pyx":62
  *         cdef vector[float] search_seq_vec = search_sequence
  * 
  *         cdef vector[string] results = self.m_dawg.fuzzySearch(search_seq_vec, gap_allowance, ppm_tol)             # <<<<<<<<<<<<<<
  * 
  *         return list(set(
  */
-  __pyx_t_2 = __Pyx_PyInt_As_int(__pyx_v_gap_allowance); if (unlikely((__pyx_t_2 == (int)-1) && PyErr_Occurred())) __PYX_ERR(1, 38, __pyx_L1_error)
-  __pyx_t_3 = __Pyx_PyInt_As_int(__pyx_v_ppm_tol); if (unlikely((__pyx_t_3 == (int)-1) && PyErr_Occurred())) __PYX_ERR(1, 38, __pyx_L1_error)
+  __pyx_t_2 = __Pyx_PyInt_As_int(__pyx_v_gap_allowance); if (unlikely((__pyx_t_2 == (int)-1) && PyErr_Occurred())) __PYX_ERR(1, 62, __pyx_L1_error)
+  __pyx_t_3 = __Pyx_PyInt_As_int(__pyx_v_ppm_tol); if (unlikely((__pyx_t_3 == (int)-1) && PyErr_Occurred())) __PYX_ERR(1, 62, __pyx_L1_error)
   __pyx_v_results = __pyx_v_self->m_dawg->fuzzySearch(__pyx_v_search_seq_vec, __pyx_t_2, __pyx_t_3);
 
-  /* "mass_dawg.pyx":40
+  /* "mass_dawg.pyx":64
  *         cdef vector[string] results = self.m_dawg.fuzzySearch(search_seq_vec, gap_allowance, ppm_tol)
  * 
  *         return list(set(             # <<<<<<<<<<<<<<
@@ -1953,14 +1957,14 @@ static PyObject *__pyx_pf_9mass_dawg_10PyMassDawg_8fuzzy_search(struct __pyx_obj
  */
   __Pyx_XDECREF(__pyx_r);
 
-  /* "mass_dawg.pyx":41
+  /* "mass_dawg.pyx":65
  * 
  *         return list(set(
  *             [result.decode() for result in results]             # <<<<<<<<<<<<<<
  *         ))
  * 
  */
-  __pyx_t_4 = PyList_New(0); if (unlikely(!__pyx_t_4)) __PYX_ERR(1, 41, __pyx_L1_error)
+  __pyx_t_4 = PyList_New(0); if (unlikely(!__pyx_t_4)) __PYX_ERR(1, 65, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_4);
   __pyx_t_5 = __pyx_v_results.begin();
   for (;;) {
@@ -1968,35 +1972,35 @@ static PyObject *__pyx_pf_9mass_dawg_10PyMassDawg_8fuzzy_search(struct __pyx_obj
     __pyx_t_6 = *__pyx_t_5;
     ++__pyx_t_5;
     __pyx_v_result = __pyx_t_6;
-    __pyx_t_7 = __Pyx_decode_cpp_string(__pyx_v_result, 0, PY_SSIZE_T_MAX, NULL, NULL, NULL); if (unlikely(!__pyx_t_7)) __PYX_ERR(1, 41, __pyx_L1_error)
+    __pyx_t_7 = __Pyx_decode_cpp_string(__pyx_v_result, 0, PY_SSIZE_T_MAX, NULL, NULL, NULL); if (unlikely(!__pyx_t_7)) __PYX_ERR(1, 65, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_7);
-    if (unlikely(__Pyx_ListComp_Append(__pyx_t_4, (PyObject*)__pyx_t_7))) __PYX_ERR(1, 41, __pyx_L1_error)
+    if (unlikely(__Pyx_ListComp_Append(__pyx_t_4, (PyObject*)__pyx_t_7))) __PYX_ERR(1, 65, __pyx_L1_error)
     __Pyx_DECREF(__pyx_t_7); __pyx_t_7 = 0;
   }
 
-  /* "mass_dawg.pyx":40
+  /* "mass_dawg.pyx":64
  *         cdef vector[string] results = self.m_dawg.fuzzySearch(search_seq_vec, gap_allowance, ppm_tol)
  * 
  *         return list(set(             # <<<<<<<<<<<<<<
  *             [result.decode() for result in results]
  *         ))
  */
-  __pyx_t_7 = PySet_New(__pyx_t_4); if (unlikely(!__pyx_t_7)) __PYX_ERR(1, 40, __pyx_L1_error)
+  __pyx_t_7 = PySet_New(__pyx_t_4); if (unlikely(!__pyx_t_7)) __PYX_ERR(1, 64, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_7);
   __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
-  __pyx_t_4 = PySequence_List(__pyx_t_7); if (unlikely(!__pyx_t_4)) __PYX_ERR(1, 40, __pyx_L1_error)
+  __pyx_t_4 = PySequence_List(__pyx_t_7); if (unlikely(!__pyx_t_4)) __PYX_ERR(1, 64, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_4);
   __Pyx_DECREF(__pyx_t_7); __pyx_t_7 = 0;
   __pyx_r = ((PyObject*)__pyx_t_4);
   __pyx_t_4 = 0;
   goto __pyx_L0;
 
-  /* "mass_dawg.pyx":35
+  /* "mass_dawg.pyx":48
  *             print("ERROR: Items must be sorted smallest to largest for insertion")
  * 
  *     def fuzzy_search(self, search_sequence: list, gap_allowance: int, ppm_tol: int) -> list:             # <<<<<<<<<<<<<<
- *         cdef vector[float] search_seq_vec = search_sequence
- * 
+ *         '''
+ *         Search for a sequence in the graph allowing for up to gap_allowance missed masses in the search
  */
 
   /* function exit code */
@@ -2011,43 +2015,228 @@ static PyObject *__pyx_pf_9mass_dawg_10PyMassDawg_8fuzzy_search(struct __pyx_obj
   return __pyx_r;
 }
 
-/* "mass_dawg.pyx":44
+/* "mass_dawg.pyx":68
  *         ))
  * 
- *     def finish(self):             # <<<<<<<<<<<<<<
- *         self.m_dawg.finish()
+ *     def search(self, search_sequence: list, ppm_tol: int) -> list:             # <<<<<<<<<<<<<<
+ *         '''
+ *         Search for a sequence in the graph with no gaps allowed
  */
 
 /* Python wrapper */
-static PyObject *__pyx_pw_9mass_dawg_10PyMassDawg_11finish(PyObject *__pyx_v_self, CYTHON_UNUSED PyObject *unused); /*proto*/
-static PyObject *__pyx_pw_9mass_dawg_10PyMassDawg_11finish(PyObject *__pyx_v_self, CYTHON_UNUSED PyObject *unused) {
+static PyObject *__pyx_pw_9mass_dawg_10PyMassDawg_11search(PyObject *__pyx_v_self, PyObject *__pyx_args, PyObject *__pyx_kwds); /*proto*/
+static char __pyx_doc_9mass_dawg_10PyMassDawg_10search[] = "\n        Search for a sequence in the graph with no gaps allowed\n\n        Inputs:\n            search_sequence:    (list) the sequence of masses (floats) to search for\n            ppm_tol:            (int) the allowed difference (in parts per million) allowed \n                                      between an observed and theoretical mass to be called a match\n        Outputs:\n            (list) kmers (strings) found in the search\n        ";
+static PyObject *__pyx_pw_9mass_dawg_10PyMassDawg_11search(PyObject *__pyx_v_self, PyObject *__pyx_args, PyObject *__pyx_kwds) {
+  PyObject *__pyx_v_search_sequence = 0;
+  PyObject *__pyx_v_ppm_tol = 0;
+  int __pyx_lineno = 0;
+  const char *__pyx_filename = NULL;
+  int __pyx_clineno = 0;
+  PyObject *__pyx_r = 0;
+  __Pyx_RefNannyDeclarations
+  __Pyx_RefNannySetupContext("search (wrapper)", 0);
+  {
+    static PyObject **__pyx_pyargnames[] = {&__pyx_n_s_search_sequence,&__pyx_n_s_ppm_tol,0};
+    PyObject* values[2] = {0,0};
+    if (unlikely(__pyx_kwds)) {
+      Py_ssize_t kw_args;
+      const Py_ssize_t pos_args = PyTuple_GET_SIZE(__pyx_args);
+      switch (pos_args) {
+        case  2: values[1] = PyTuple_GET_ITEM(__pyx_args, 1);
+        CYTHON_FALLTHROUGH;
+        case  1: values[0] = PyTuple_GET_ITEM(__pyx_args, 0);
+        CYTHON_FALLTHROUGH;
+        case  0: break;
+        default: goto __pyx_L5_argtuple_error;
+      }
+      kw_args = PyDict_Size(__pyx_kwds);
+      switch (pos_args) {
+        case  0:
+        if (likely((values[0] = __Pyx_PyDict_GetItemStr(__pyx_kwds, __pyx_n_s_search_sequence)) != 0)) kw_args--;
+        else goto __pyx_L5_argtuple_error;
+        CYTHON_FALLTHROUGH;
+        case  1:
+        if (likely((values[1] = __Pyx_PyDict_GetItemStr(__pyx_kwds, __pyx_n_s_ppm_tol)) != 0)) kw_args--;
+        else {
+          __Pyx_RaiseArgtupleInvalid("search", 1, 2, 2, 1); __PYX_ERR(1, 68, __pyx_L3_error)
+        }
+      }
+      if (unlikely(kw_args > 0)) {
+        if (unlikely(__Pyx_ParseOptionalKeywords(__pyx_kwds, __pyx_pyargnames, 0, values, pos_args, "search") < 0)) __PYX_ERR(1, 68, __pyx_L3_error)
+      }
+    } else if (PyTuple_GET_SIZE(__pyx_args) != 2) {
+      goto __pyx_L5_argtuple_error;
+    } else {
+      values[0] = PyTuple_GET_ITEM(__pyx_args, 0);
+      values[1] = PyTuple_GET_ITEM(__pyx_args, 1);
+    }
+    __pyx_v_search_sequence = ((PyObject*)values[0]);
+    __pyx_v_ppm_tol = values[1];
+  }
+  goto __pyx_L4_argument_unpacking_done;
+  __pyx_L5_argtuple_error:;
+  __Pyx_RaiseArgtupleInvalid("search", 1, 2, 2, PyTuple_GET_SIZE(__pyx_args)); __PYX_ERR(1, 68, __pyx_L3_error)
+  __pyx_L3_error:;
+  __Pyx_AddTraceback("mass_dawg.PyMassDawg.search", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_RefNannyFinishContext();
+  return NULL;
+  __pyx_L4_argument_unpacking_done:;
+  if (unlikely(!__Pyx_ArgTypeTest(((PyObject *)__pyx_v_search_sequence), (&PyList_Type), 1, "search_sequence", 1))) __PYX_ERR(1, 68, __pyx_L1_error)
+  __pyx_r = __pyx_pf_9mass_dawg_10PyMassDawg_10search(((struct __pyx_obj_9mass_dawg_PyMassDawg *)__pyx_v_self), __pyx_v_search_sequence, __pyx_v_ppm_tol);
+
+  /* function exit code */
+  goto __pyx_L0;
+  __pyx_L1_error:;
+  __pyx_r = NULL;
+  __pyx_L0:;
+  __Pyx_RefNannyFinishContext();
+  return __pyx_r;
+}
+
+static PyObject *__pyx_pf_9mass_dawg_10PyMassDawg_10search(struct __pyx_obj_9mass_dawg_PyMassDawg *__pyx_v_self, PyObject *__pyx_v_search_sequence, PyObject *__pyx_v_ppm_tol) {
+  std::vector<float>  __pyx_v_search_seq_vec;
+  std::vector<std::string>  __pyx_v_results;
+  std::string __pyx_v_result;
+  PyObject *__pyx_r = NULL;
+  __Pyx_RefNannyDeclarations
+  std::vector<float>  __pyx_t_1;
+  int __pyx_t_2;
+  PyObject *__pyx_t_3 = NULL;
+  std::vector<std::string> ::iterator __pyx_t_4;
+  std::string __pyx_t_5;
+  PyObject *__pyx_t_6 = NULL;
+  int __pyx_lineno = 0;
+  const char *__pyx_filename = NULL;
+  int __pyx_clineno = 0;
+  __Pyx_RefNannySetupContext("search", 0);
+
+  /* "mass_dawg.pyx":79
+ *             (list) kmers (strings) found in the search
+ *         '''
+ *         cdef vector[float] search_seq_vec = search_sequence             # <<<<<<<<<<<<<<
+ * 
+ *         cdef vector[string] results = self.m_dawg.search(search_seq_vec, ppm_tol)
+ */
+  __pyx_t_1 = __pyx_convert_vector_from_py_float(__pyx_v_search_sequence); if (unlikely(PyErr_Occurred())) __PYX_ERR(1, 79, __pyx_L1_error)
+  __pyx_v_search_seq_vec = __pyx_t_1;
+
+  /* "mass_dawg.pyx":81
+ *         cdef vector[float] search_seq_vec = search_sequence
+ * 
+ *         cdef vector[string] results = self.m_dawg.search(search_seq_vec, ppm_tol)             # <<<<<<<<<<<<<<
+ * 
+ *         return list(set(
+ */
+  __pyx_t_2 = __Pyx_PyInt_As_int(__pyx_v_ppm_tol); if (unlikely((__pyx_t_2 == (int)-1) && PyErr_Occurred())) __PYX_ERR(1, 81, __pyx_L1_error)
+  __pyx_v_results = __pyx_v_self->m_dawg->search(__pyx_v_search_seq_vec, __pyx_t_2);
+
+  /* "mass_dawg.pyx":83
+ *         cdef vector[string] results = self.m_dawg.search(search_seq_vec, ppm_tol)
+ * 
+ *         return list(set(             # <<<<<<<<<<<<<<
+ *             [result.decode() for result in results]
+ *         ))
+ */
+  __Pyx_XDECREF(__pyx_r);
+
+  /* "mass_dawg.pyx":84
+ * 
+ *         return list(set(
+ *             [result.decode() for result in results]             # <<<<<<<<<<<<<<
+ *         ))
+ * 
+ */
+  __pyx_t_3 = PyList_New(0); if (unlikely(!__pyx_t_3)) __PYX_ERR(1, 84, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_3);
+  __pyx_t_4 = __pyx_v_results.begin();
+  for (;;) {
+    if (!(__pyx_t_4 != __pyx_v_results.end())) break;
+    __pyx_t_5 = *__pyx_t_4;
+    ++__pyx_t_4;
+    __pyx_v_result = __pyx_t_5;
+    __pyx_t_6 = __Pyx_decode_cpp_string(__pyx_v_result, 0, PY_SSIZE_T_MAX, NULL, NULL, NULL); if (unlikely(!__pyx_t_6)) __PYX_ERR(1, 84, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_6);
+    if (unlikely(__Pyx_ListComp_Append(__pyx_t_3, (PyObject*)__pyx_t_6))) __PYX_ERR(1, 84, __pyx_L1_error)
+    __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
+  }
+
+  /* "mass_dawg.pyx":83
+ *         cdef vector[string] results = self.m_dawg.search(search_seq_vec, ppm_tol)
+ * 
+ *         return list(set(             # <<<<<<<<<<<<<<
+ *             [result.decode() for result in results]
+ *         ))
+ */
+  __pyx_t_6 = PySet_New(__pyx_t_3); if (unlikely(!__pyx_t_6)) __PYX_ERR(1, 83, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_6);
+  __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
+  __pyx_t_3 = PySequence_List(__pyx_t_6); if (unlikely(!__pyx_t_3)) __PYX_ERR(1, 83, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_3);
+  __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
+  __pyx_r = ((PyObject*)__pyx_t_3);
+  __pyx_t_3 = 0;
+  goto __pyx_L0;
+
+  /* "mass_dawg.pyx":68
+ *         ))
+ * 
+ *     def search(self, search_sequence: list, ppm_tol: int) -> list:             # <<<<<<<<<<<<<<
+ *         '''
+ *         Search for a sequence in the graph with no gaps allowed
+ */
+
+  /* function exit code */
+  __pyx_L1_error:;
+  __Pyx_XDECREF(__pyx_t_3);
+  __Pyx_XDECREF(__pyx_t_6);
+  __Pyx_AddTraceback("mass_dawg.PyMassDawg.search", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __pyx_r = NULL;
+  __pyx_L0:;
+  __Pyx_XGIVEREF(__pyx_r);
+  __Pyx_RefNannyFinishContext();
+  return __pyx_r;
+}
+
+/* "mass_dawg.pyx":87
+ *         ))
+ * 
+ *     def finish(self):             # <<<<<<<<<<<<<<
+ *         '''
+ *         Final compression of any leftover nodes
+ */
+
+/* Python wrapper */
+static PyObject *__pyx_pw_9mass_dawg_10PyMassDawg_13finish(PyObject *__pyx_v_self, CYTHON_UNUSED PyObject *unused); /*proto*/
+static char __pyx_doc_9mass_dawg_10PyMassDawg_12finish[] = "\n        Final compression of any leftover nodes\n        ";
+static PyObject *__pyx_pw_9mass_dawg_10PyMassDawg_13finish(PyObject *__pyx_v_self, CYTHON_UNUSED PyObject *unused) {
   PyObject *__pyx_r = 0;
   __Pyx_RefNannyDeclarations
   __Pyx_RefNannySetupContext("finish (wrapper)", 0);
-  __pyx_r = __pyx_pf_9mass_dawg_10PyMassDawg_10finish(((struct __pyx_obj_9mass_dawg_PyMassDawg *)__pyx_v_self));
+  __pyx_r = __pyx_pf_9mass_dawg_10PyMassDawg_12finish(((struct __pyx_obj_9mass_dawg_PyMassDawg *)__pyx_v_self));
 
   /* function exit code */
   __Pyx_RefNannyFinishContext();
   return __pyx_r;
 }
 
-static PyObject *__pyx_pf_9mass_dawg_10PyMassDawg_10finish(struct __pyx_obj_9mass_dawg_PyMassDawg *__pyx_v_self) {
+static PyObject *__pyx_pf_9mass_dawg_10PyMassDawg_12finish(struct __pyx_obj_9mass_dawg_PyMassDawg *__pyx_v_self) {
   PyObject *__pyx_r = NULL;
   __Pyx_RefNannyDeclarations
   __Pyx_RefNannySetupContext("finish", 0);
 
-  /* "mass_dawg.pyx":45
- * 
- *     def finish(self):
+  /* "mass_dawg.pyx":91
+ *         Final compression of any leftover nodes
+ *         '''
  *         self.m_dawg.finish()             # <<<<<<<<<<<<<<
  */
   __pyx_v_self->m_dawg->finish();
 
-  /* "mass_dawg.pyx":44
+  /* "mass_dawg.pyx":87
  *         ))
  * 
  *     def finish(self):             # <<<<<<<<<<<<<<
- *         self.m_dawg.finish()
+ *         '''
+ *         Final compression of any leftover nodes
  */
 
   /* function exit code */
@@ -2064,19 +2253,19 @@ static PyObject *__pyx_pf_9mass_dawg_10PyMassDawg_10finish(struct __pyx_obj_9mas
  */
 
 /* Python wrapper */
-static PyObject *__pyx_pw_9mass_dawg_10PyMassDawg_13__reduce_cython__(PyObject *__pyx_v_self, CYTHON_UNUSED PyObject *unused); /*proto*/
-static PyObject *__pyx_pw_9mass_dawg_10PyMassDawg_13__reduce_cython__(PyObject *__pyx_v_self, CYTHON_UNUSED PyObject *unused) {
+static PyObject *__pyx_pw_9mass_dawg_10PyMassDawg_15__reduce_cython__(PyObject *__pyx_v_self, CYTHON_UNUSED PyObject *unused); /*proto*/
+static PyObject *__pyx_pw_9mass_dawg_10PyMassDawg_15__reduce_cython__(PyObject *__pyx_v_self, CYTHON_UNUSED PyObject *unused) {
   PyObject *__pyx_r = 0;
   __Pyx_RefNannyDeclarations
   __Pyx_RefNannySetupContext("__reduce_cython__ (wrapper)", 0);
-  __pyx_r = __pyx_pf_9mass_dawg_10PyMassDawg_12__reduce_cython__(((struct __pyx_obj_9mass_dawg_PyMassDawg *)__pyx_v_self));
+  __pyx_r = __pyx_pf_9mass_dawg_10PyMassDawg_14__reduce_cython__(((struct __pyx_obj_9mass_dawg_PyMassDawg *)__pyx_v_self));
 
   /* function exit code */
   __Pyx_RefNannyFinishContext();
   return __pyx_r;
 }
 
-static PyObject *__pyx_pf_9mass_dawg_10PyMassDawg_12__reduce_cython__(CYTHON_UNUSED struct __pyx_obj_9mass_dawg_PyMassDawg *__pyx_v_self) {
+static PyObject *__pyx_pf_9mass_dawg_10PyMassDawg_14__reduce_cython__(CYTHON_UNUSED struct __pyx_obj_9mass_dawg_PyMassDawg *__pyx_v_self) {
   PyObject *__pyx_r = NULL;
   __Pyx_RefNannyDeclarations
   PyObject *__pyx_t_1 = NULL;
@@ -2121,19 +2310,19 @@ static PyObject *__pyx_pf_9mass_dawg_10PyMassDawg_12__reduce_cython__(CYTHON_UNU
  */
 
 /* Python wrapper */
-static PyObject *__pyx_pw_9mass_dawg_10PyMassDawg_15__setstate_cython__(PyObject *__pyx_v_self, PyObject *__pyx_v___pyx_state); /*proto*/
-static PyObject *__pyx_pw_9mass_dawg_10PyMassDawg_15__setstate_cython__(PyObject *__pyx_v_self, PyObject *__pyx_v___pyx_state) {
+static PyObject *__pyx_pw_9mass_dawg_10PyMassDawg_17__setstate_cython__(PyObject *__pyx_v_self, PyObject *__pyx_v___pyx_state); /*proto*/
+static PyObject *__pyx_pw_9mass_dawg_10PyMassDawg_17__setstate_cython__(PyObject *__pyx_v_self, PyObject *__pyx_v___pyx_state) {
   PyObject *__pyx_r = 0;
   __Pyx_RefNannyDeclarations
   __Pyx_RefNannySetupContext("__setstate_cython__ (wrapper)", 0);
-  __pyx_r = __pyx_pf_9mass_dawg_10PyMassDawg_14__setstate_cython__(((struct __pyx_obj_9mass_dawg_PyMassDawg *)__pyx_v_self), ((PyObject *)__pyx_v___pyx_state));
+  __pyx_r = __pyx_pf_9mass_dawg_10PyMassDawg_16__setstate_cython__(((struct __pyx_obj_9mass_dawg_PyMassDawg *)__pyx_v_self), ((PyObject *)__pyx_v___pyx_state));
 
   /* function exit code */
   __Pyx_RefNannyFinishContext();
   return __pyx_r;
 }
 
-static PyObject *__pyx_pf_9mass_dawg_10PyMassDawg_14__setstate_cython__(CYTHON_UNUSED struct __pyx_obj_9mass_dawg_PyMassDawg *__pyx_v_self, CYTHON_UNUSED PyObject *__pyx_v___pyx_state) {
+static PyObject *__pyx_pf_9mass_dawg_10PyMassDawg_16__setstate_cython__(CYTHON_UNUSED struct __pyx_obj_9mass_dawg_PyMassDawg *__pyx_v_self, CYTHON_UNUSED PyObject *__pyx_v___pyx_state) {
   PyObject *__pyx_r = NULL;
   __Pyx_RefNannyDeclarations
   PyObject *__pyx_t_1 = NULL;
@@ -2639,12 +2828,13 @@ static void __pyx_tp_dealloc_9mass_dawg_PyMassDawg(PyObject *o) {
 }
 
 static PyMethodDef __pyx_methods_9mass_dawg_PyMassDawg[] = {
-  {"show", (PyCFunction)__pyx_pw_9mass_dawg_10PyMassDawg_5show, METH_NOARGS, 0},
-  {"insert", (PyCFunction)(void*)(PyCFunctionWithKeywords)__pyx_pw_9mass_dawg_10PyMassDawg_7insert, METH_VARARGS|METH_KEYWORDS, 0},
-  {"fuzzy_search", (PyCFunction)(void*)(PyCFunctionWithKeywords)__pyx_pw_9mass_dawg_10PyMassDawg_9fuzzy_search, METH_VARARGS|METH_KEYWORDS, 0},
-  {"finish", (PyCFunction)__pyx_pw_9mass_dawg_10PyMassDawg_11finish, METH_NOARGS, 0},
-  {"__reduce_cython__", (PyCFunction)__pyx_pw_9mass_dawg_10PyMassDawg_13__reduce_cython__, METH_NOARGS, 0},
-  {"__setstate_cython__", (PyCFunction)__pyx_pw_9mass_dawg_10PyMassDawg_15__setstate_cython__, METH_O, 0},
+  {"show", (PyCFunction)__pyx_pw_9mass_dawg_10PyMassDawg_5show, METH_NOARGS, __pyx_doc_9mass_dawg_10PyMassDawg_4show},
+  {"insert", (PyCFunction)(void*)(PyCFunctionWithKeywords)__pyx_pw_9mass_dawg_10PyMassDawg_7insert, METH_VARARGS|METH_KEYWORDS, __pyx_doc_9mass_dawg_10PyMassDawg_6insert},
+  {"fuzzy_search", (PyCFunction)(void*)(PyCFunctionWithKeywords)__pyx_pw_9mass_dawg_10PyMassDawg_9fuzzy_search, METH_VARARGS|METH_KEYWORDS, __pyx_doc_9mass_dawg_10PyMassDawg_8fuzzy_search},
+  {"search", (PyCFunction)(void*)(PyCFunctionWithKeywords)__pyx_pw_9mass_dawg_10PyMassDawg_11search, METH_VARARGS|METH_KEYWORDS, __pyx_doc_9mass_dawg_10PyMassDawg_10search},
+  {"finish", (PyCFunction)__pyx_pw_9mass_dawg_10PyMassDawg_13finish, METH_NOARGS, __pyx_doc_9mass_dawg_10PyMassDawg_12finish},
+  {"__reduce_cython__", (PyCFunction)__pyx_pw_9mass_dawg_10PyMassDawg_15__reduce_cython__, METH_NOARGS, 0},
+  {"__setstate_cython__", (PyCFunction)__pyx_pw_9mass_dawg_10PyMassDawg_17__setstate_cython__, METH_O, 0},
   {0, 0, 0, 0}
 };
 

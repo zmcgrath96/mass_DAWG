@@ -71,13 +71,23 @@ public:
      * Search for the input sequence while allowing for up to gapAllowances
      * before the search returns however deep it is in the graph
      * 
-     * @param sequence      vector<float>  the sequence to search 
+     * @param sequence      vector<float>   the sequence to search 
      * @param gapAllowance  int             The number of gaps to allow in the search
      * @param ppmTol        int             the tolerance in parts per million to accept when searching
      * 
      * @return vector<string>               All kmers that we found in the search
     */
    vector<string> fuzzySearch(vector<float> sequence, int gapAllowance, int ppmTol);
+
+   /**
+    * A search with no gaps allowed
+    * 
+    * @param sequence       vector<float>   the sequence to search
+    * @param ppmTol         int             the tolerance in parts per million to accept when searching
+    * 
+    * @return vector<string>                All kmers that we found in the search
+   */
+  vector<string> search(vector<float> sequence, int ppmTol);
 
     /**
      * Any remaining unchecked nodes will be checked for merging to 
@@ -89,7 +99,7 @@ private:
 
     list<UncheckedNode> uncheckedNodes;
     unordered_map<string, MassDawgNode *> minimizedNodes;
-    PreviousSequence ps;
+    PreviousSequence previousSequence;
     MassDawgNode * root;    
 
     /**

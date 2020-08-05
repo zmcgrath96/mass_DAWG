@@ -11,8 +11,8 @@ int main(){
     MassDawg * md = new MassDawg();
 
     // add a sequence
-    vector<float> singly {100.1, 200.2, 300.3};
-    vector<float> doubly {200.2, 400.4, 600.6};
+    vector<float> doubly {100.1, 200.2, 300.3};
+    vector<float> singly {200.2, 400.4, 600.6};
     string sequence = "ABC";
 
     // insert this sequcne
@@ -22,8 +22,8 @@ int main(){
     // show it before the next addition
     md->show();
 
-    singly = {100.1, 200.2, 300.3, 400.4};
-    doubly = {200.2, 400.4, 600.6, 800.8};
+    doubly = {100.1, 200.2, 300.3, 400.4};
+    singly = {200.2, 400.4, 600.6, 800.8};
     sequence = "ABCD";
 
     cout << "inserting ABCD into graph";
@@ -32,8 +32,8 @@ int main(){
     // show the graph
     md->show();
 
-    singly = {100.1, 200.4, 300.6, 400.4};
-    doubly = {200.2, 400.4, 600.6, 800.8};
+    doubly = {100.1, 200.4, 300.6, 400.4};
+    singly = {200.2, 400.4, 600.6, 800.8};
     sequence = "AXYD";
 
     cout << "inserting AXYD int graph";
@@ -60,6 +60,9 @@ int main(){
     for (string i: results){
         cout << i + "\n";
     }
+    searching = {100.1, 400.4};
+    results = md->search(searching, 10);
+    for (string i: results) cout << i + "\n";
 
     delete md;
 }

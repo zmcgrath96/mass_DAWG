@@ -42,23 +42,23 @@ void MassDawg::insert(vector<float> singlySequence, vector<float> doublySequence
     if (this->previousIsLessThan(singlySequence, doublySequence)) {
 
         // find the common prefix between the new sequence and the last sequence (mass based)	
-        int iterLength = MIN((int)singlySequence.size(), (int)this->ps.singlySequence.size());	
+        int iterLength = MIN((int)singlySequence.size(), (int)this->previousSequence.singlySequence.size());	
 
         // go through and see how much these sequences have in common	
         for (int i = 0; i < iterLength; i++){	
             // if either of the singly or doubly sequences are not the same, break	
-            if ((singlySequence[i] != this->ps.singlySequence[i]) 	
-            || (doublySequence[i] != this->ps.doublySequence[i])) break;	
+            if ((singlySequence[i] != this->previousSequence.singlySequence[i]) 	
+            || (doublySequence[i] != this->previousSequence.doublySequence[i])) break;	
 
             // update the kmer at the node at this position in the previous sequence
-            (*this->ps.nodes[i]).addKmer(kmer.substr(0, i + 1));
+            (*this->previousSequence.nodes[i]).addKmer(kmer.substr(0, i + 1));
 
             commonPrefix ++;	
         }
         
         // at the break, make lcp the previous sequence
         for (int i = 0; i < commonPrefix; i ++){
-            lcp.nodes.push_back(this->ps.nodes[i]);
+            lcp.nodes.push_back(this->previousSequence.nodes[i]);
             lcp.singlySequence.push_back(singlySequence[i]);
             lcp.doublySequence.push_back(doublySequence[i]);
         }
@@ -94,8 +94,8 @@ void MassDawg::insert(vector<float> singlySequence, vector<float> doublySequence
     nextPreviousSequence.doublySequence = doublySequence;
 
     // copy over all of the overlapped nodes
-    for (int i = 0; i < commonPrefix; i++){
-        nextPreviousSequence.nodes.push_back(this->ps.nodes[i]);
+    for (MassDawgNode * node: this->previousSequence.nodes){
+        nextPreviousSequence.nodes.push_back(node);
     }
 
     // go through the remainder of the sequence and create new nodes
@@ -121,7 +121,7 @@ void MassDawg::insert(vector<float> singlySequence, vector<float> doublySequence
     }
 
     // update the previous sequence to be this sequence
-    this->ps = nextPreviousSequence;
+    this->previousSequence = nextPreviousSequence;
 }
 
 /**
@@ -160,6 +160,71 @@ vector<string> MassDawg::fuzzySearch(vector<float> sequence, int gapAllowance, i
     return mergedResults;
 
 }
+
+/**
+* A search with no gaps allowed
+* 
+* @param sequence       vector<float>   the sequence to search
+* @param ppmTol         int             the tolerance in parts per million to accept when searching
+* 
+* @return vector<string>                All kmers that we found in the search
+*/
+vector<string> MassDawg::search(vector<float> sequence, int ppmTol){
+    MassDawgNode * currentNode = this->root;
+
+    while (true){
+        bool extended = false;
+
+        // go through each child and see if the masses fit the tolerance
+        for (MassDawgNode * child: currentNode->children){
+            // check to see if any of the values in the sequence are within
+            // the range of the singly and doubly masses within this node
+            float singlyDaTol = ppmToDa(child->singlyMass, ppmTol);
+            float doublyDaTol = ppmToDa(child->doublyMass, ppmTol);
+
+            // calcuate the bounds
+            float singlyLowerBound = child->singlyMass - singlyDaTol;
+            float singlyUpperBound = child->singlyMass + singlyDaTol;
+            float doublyLowerBound = child->doublyMass - doublyDaTol;
+            float doublyUpperBound = child->doublyMass + doublyDaTol;
+
+            // if any of the masses in the sequence are within this tolerance, we will 
+            // continue with this child.
+            bool massFound = false;
+
+            // go through each mass in the sequence and see if any of the values are in 
+            // either set of bounds
+            for (int i = 0; i < (int)sequence.size(); i++){
+                if ((singlyLowerBound <= sequence[i] && sequence[i] <= singlyUpperBound) 
+                || (doublyLowerBound <= sequence[i] && sequence[i] <= doublyUpperBound)){
+                    massFound = true;
+                    break;
+                }
+            }
+
+            if (!massFound) continue;
+            extended = true;
+
+            // reduce our sequence to be those masses that are > doubly upper and not in the singly range
+            vector<float> updatedSequence;
+            for (float mass: sequence){
+                if (mass > doublyUpperBound && 
+                !(singlyLowerBound <= mass && mass <= singlyUpperBound)){
+                    updatedSequence.push_back(mass);
+                }
+            }
+
+            sequence = updatedSequence;
+            currentNode = child;
+            break;
+        }
+
+        if (!extended) break;
+    }
+
+    return currentNode->kmers;
+    
+  }
 
 
 
@@ -340,7 +405,7 @@ vector<string> MassDawg::fuzzySearchRec(vector<float> sequence, MassDawgNode * c
 bool MassDawg::previousIsLessThan(vector<float> singlySequence, vector<float> doublySequence){	
     // get the lengths of each and determine the shorter one	
     int newLength = (int)singlySequence.size();	
-    int oldLength = (int)this->ps.singlySequence.size();	
+    int oldLength = (int)this->previousSequence.singlySequence.size();	
 
     int iterLength = MIN(newLength, oldLength);	
 
@@ -348,14 +413,14 @@ bool MassDawg::previousIsLessThan(vector<float> singlySequence, vector<float> do
 
         // if the new one in either the singly OR doubly	
         // is greater than the previous at i, retutn False	
-        if ((singlySequence[i] < this->ps.singlySequence[i])	
-        || (doublySequence[i] < this->ps.doublySequence[i])){	
+        if ((singlySequence[i] < this->previousSequence.singlySequence[i])	
+        || (doublySequence[i] < this->previousSequence.doublySequence[i])){	
             return false;	
         }	
 
         // if the new one is greater than the old one, return true	
-        if ((singlySequence[i] > this->ps.singlySequence[i])	
-        && (doublySequence[i] > this->ps.doublySequence[i])){	
+        if ((singlySequence[i] > this->previousSequence.singlySequence[i])	
+        && (doublySequence[i] > this->previousSequence.doublySequence[i])){	
             return true;	
         }	
     }	
@@ -389,7 +454,7 @@ LongestCommonPrefix MassDawg::longestCommonPrefix(vector<float> singlySequence, 
     }
 
     MassDawgNode * currentNode = this->root;
-    LongestCommonPrefix lcp;
+    LongestCommonPrefix lcp(vector<float> {}, vector<float> {}, vector<MassDawgNode *> {});
     for (int i = 0; i < (int)singlySequence.size(); i++){
         // go through the current node's children, and if the child has a node that meets the weight at i,
         // add it ot the list

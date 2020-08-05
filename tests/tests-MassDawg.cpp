@@ -48,11 +48,18 @@ TEST_CASE("Testing Mass Dawg"){
 
         REQUIRE(hasString(md->fuzzySearch(singlySearchSeq1, 0, 10), searchString1));
         REQUIRE(hasString(md->fuzzySearch(singlySearchSeq2, 0, 10), searchString2));
+
+        REQUIRE(hasString(md->search(singlySearchSeq1, 10), searchString1));
+        REQUIRE(hasString(md->search(singlySearchSeq2, 10), searchString2));
     }
 
     SECTION("Two insertions out of order does not throw exception"){
         REQUIRE_NOTHROW(md->insert(singlySearchSeq2, doublySearchSeq2, searchString2));
         REQUIRE_NOTHROW(md->insert(singlySearchSeq1, doublySearchSeq1, searchString1));
+        md->finish();
+
+        REQUIRE(hasString(md->search(singlySearchSeq1, 10), searchString1));
+        REQUIRE(hasString(md->search(singlySearchSeq2, 10), searchString2));
     }
 
     SECTION("Two insertions with a common prefix and a search only until the common prefix returns both kmers"){
@@ -62,6 +69,7 @@ TEST_CASE("Testing Mass Dawg"){
         vector<string> results = md->fuzzySearch({200.2, 400.4}, 0, 10);
         
         REQUIRE(hasString(results, "AB"));
+        REQUIRE(hasString(md->search({200.2, 400.4}, 10), "AB"));
     }
 
     SECTION("Two insertions with no common prefix but a common suffix and subsequent search for it returns both kmers"){

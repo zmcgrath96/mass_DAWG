@@ -7,4 +7,5 @@ cdef extern from "../src/MassDawg.hpp":
         void show()
         void insert(vector[float], vector[float], string) except +
         vector[string] fuzzySearch(vector[float], int, int)
+        vector[string] search(vector[float], int)
         void finish()

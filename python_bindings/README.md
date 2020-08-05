@@ -196,4 +196,5 @@ AXYD
 * __show()__: Print the graph to the console as a tree (merged nodes have their kmers put into a list)
 * __insert(singly_sequence: list, doubly_sequence: list, kmer: str) -> None__: Insert a pair of singly charged and doubly charged masses into the dawg associated withthe kmer (all 3 parameters MUST be the same length)
 * __fuzzy_search(sequence: list, gap_allowance: int, ppm_tol: int) -> None__: Search the graph for a sequence of floats allowing for up to gapAllowance missed masses. ppmTol is the allowed tolerance for a mass to fall within (ppm = parts per million)
+*__vector<string> search(sequence: list, ppm_tol: int)__: Search the graph for a sequence of floats with no missed masses. ppmTol is the allowed tolerance for a mass to fall within (ppm = parts per million)
 * __finish()__: Go through the graph one final time to merge all remaining nodes that have not been checked for duplicates
