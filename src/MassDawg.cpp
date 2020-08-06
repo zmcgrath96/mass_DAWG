@@ -175,7 +175,9 @@ vector<string> MassDawg::search(vector<float> sequence, int ppmTol){
     if (sequence.empty()) return vector<string> {};
 
     while (true){
-        bool extended = false;
+
+        // collect all the children that have a mass and take the one with the lowest masses
+        vector<MassDawgNode *> candidates;
 
         // go through each child and see if the masses fit the tolerance
         for (MassDawgNode * child: currentNode->children){
@@ -205,23 +207,38 @@ vector<string> MassDawg::search(vector<float> sequence, int ppmTol){
             }
 
             if (!massFound) continue;
-            extended = true;
-
-            // reduce our sequence to be those masses that are > doubly upper and not in the singly range
-            vector<float> updatedSequence;
-            for (float mass: sequence){
-                if (mass > doublyUpperBound && 
-                !(singlyLowerBound <= mass && mass <= singlyUpperBound)){
-                    updatedSequence.push_back(mass);
-                }
-            }
-
-            sequence = updatedSequence;
-            currentNode = child;
-            break;
+            
+            candidates.push_back(child);
         }
 
-        if (!extended) break;
+        if (candidates.empty()) break;
+
+        // find the candidate with the smallest mass
+        int indexOfSmallest = 0;
+        float smallestMass = candidates.front()->singlyMass;
+        for (int i = 1; i < (int)candidates.size(); i++){
+            if (candidates[i]->singlyMass < smallestMass){
+                indexOfSmallest = i;
+                smallestMass = candidates[i]->singlyMass;
+            }
+        }
+
+        //the child at indexOfSmallest is our new currentNode and we need to update the sequence 
+        // to not include masses that the child has
+        vector<float> updatedSequence;
+        float doublyDaTol = ppmToDa(candidates[indexOfSmallest]->doublyMass, ppmTol);
+        float singlyDaTol = ppmToDa(candidates[indexOfSmallest]->singlyMass, ppmTol);
+
+        for (float mass: sequence){
+            if (mass <= candidates[indexOfSmallest]->doublyMass + doublyDaTol || 
+            (mass >= candidates[indexOfSmallest]->singlyMass - singlyDaTol &&
+            mass <= candidates[indexOfSmallest]->singlyMass + singlyDaTol)) continue;
+
+            updatedSequence.push_back(mass);
+        }
+
+        currentNode = candidates[indexOfSmallest];
+        sequence = updatedSequence;
     }
 
     return currentNode->kmers;
